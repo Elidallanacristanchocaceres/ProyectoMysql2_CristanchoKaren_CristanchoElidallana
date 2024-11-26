@@ -323,7 +323,6 @@ JOIN Cultivos c ON rc.cultivo_id = c.cultivo_id
 GROUP BY c.cultivo_id
 HAVING AVG(rc.rendimiento) < (SELECT AVG(rendimiento) FROM Rendimiento_Cultivo);
 
-
 53. **Cosechas acumuladas que no cumplen estándares de calidad**:
 SELECT c.cultivo_id, SUM(co.cantidad_recolectada) AS total_cosechado
 FROM Cosecha co
@@ -331,12 +330,10 @@ JOIN Cultivos c ON co.cultivo_id = c.cultivo_id
 WHERE co.calidad_control <> 'Aprobado'
 GROUP BY c.cultivo_id;
 
-
 54. **Costo total de producción de cultivos por año**:
 SELECT YEAR(fecha) AS año, SUM(monto) AS total_costos
 FROM Costos_Produccion
 GROUP BY YEAR(fecha);
-
 
 55. **Empleados que más calidad aportan según sus evaluaciones**:
 SELECT e.nombre, SUM(ev.puntuacion) AS total_calidad
@@ -345,19 +342,16 @@ JOIN Empleados e ON ev.empleado_id = e.empleado_id
 GROUP BY e.nombre
 ORDER BY total_calidad DESC LIMIT 5;
 
-
 56. **Cantidad total de maquinaria en funcionamiento**:
 SELECT COUNT(*) AS total_maquinaria_operativa
 FROM Maquinaria
 WHERE estado = 'Operativa';
-
 
 57. **Costo acumulado de maquinaria por tipo**:
 SELECT tipo_maquinaria, SUM(m.costo) AS total_costos
 FROM Mantenimiento_Maquinaria m
 JOIN Maquinaria ma ON m.maquinaria_id = ma.maquinaria_id
 GROUP BY tipo_maquinaria;
-
 
 58. **Últimas actualizaciones de inventario**:
 SELECT p.nombre, i.cantidad, i.fecha_actualizacion
@@ -366,14 +360,12 @@ JOIN Productos p ON i.producto_id = p.producto_id
 ORDER BY i.fecha_actualizacion DESC
 LIMIT 10;
 
-
 59. **Proveedores con más pagos realizados**:
 SELECT pr.nombre, COUNT(pp.pago_id) AS total_pagos
 FROM Pagos_Proveedores pp
 JOIN Proveedores pr ON pp.proveedor_id = pr.proveedor_id
 GROUP BY pr.nombre
 ORDER BY total_pagos DESC;
-
 
 60. **Cultivos cosechados sin calidad aprobada**:
 SELECT c.cultivo_id, SUM(co.cantidad_recolectada) AS cantidad_total
@@ -388,7 +380,6 @@ FROM Ventas v
 JOIN Clientes c ON v.cliente_id = c.cliente_id
 GROUP BY c.nombre;
 
-
 62. **Total de ventas por producto y por mes**
 SELECT p.nombre, MONTH(v.fecha_venta) AS mes, SUM(v.cantidad * v.precio_unitario) AS total_ventas
 FROM Ventas v
@@ -401,12 +392,10 @@ FROM Productos p
 LEFT JOIN Ventas v ON p.producto_id = v.producto_id
 WHERE v.fecha_venta < DATE_SUB(CURDATE(), INTERVAL 3 MONTH) OR v.fecha_venta IS NULL;
 
-
 64. **Total de clientes con compras en el último año**:
 SELECT COUNT(DISTINCT cliente_id) AS total_clientes
 FROM Ventas
 WHERE fecha_venta > DATE_SUB(CURDATE(), INTERVAL 1 YEAR);
-
 
 65. **Empleados que no han recibido evaluación en los últimos 6 meses**:
 SELECT e.nombre
@@ -419,7 +408,6 @@ SELECT c.cultivo_id, c.fecha_siembra
 FROM Cultivos c
 WHERE c.fecha_siembra > DATE_SUB(CURDATE(), INTERVAL 3 MONTH);
 
-
 67. **Costo total de mantenimiento por tipo de mantenimiento**:
 SELECT tipo_mantenimiento, SUM(costo) AS total_costo
 FROM Mantenimiento_Maquinaria
@@ -429,7 +417,6 @@ GROUP BY tipo_mantenimiento;
 SELECT e.nombre, e.salario
 FROM Empleados e
 WHERE e.salario > (SELECT AVG(salario) + (SELECT STDDEV(salario) FROM Empleados) FROM Empleados);
-
 
 69. **Promedio de gastos operativos por tipo de costo**:
 SELECT tipo_costo, AVG(monto) AS promedio_gasto
@@ -450,7 +437,6 @@ FROM Control_Calidad c
 JOIN Productos p ON c.producto_id = p.producto_id
 WHERE c.resultado <> 'Aprobado';
 
-
 72. **Tareas programadas para el próximo mes**:
 SELECT t.descripcion, t.fecha_inicio
 FROM Tareas t
@@ -463,18 +449,15 @@ JOIN Mantenimiento_Maquinaria mm ON m.maquinaria_id = mm.maquinaria_id
 WHERE mm.fecha_mantenimiento > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
 GROUP BY m.nombre;
 
-
 74. **Total de pagos a proveedores por mes**:
 SELECT MONTH(fecha_pago) AS mes, SUM(monto) AS total_pagado
 FROM Pagos_Proveedores
 GROUP BY mes;
 
-
 75. **Empleados con el salario más alto**:
 SELECT e.nombre, e.salario
 FROM Empleados e
 WHERE e.salario = (SELECT MAX(salario) FROM Empleados);
-
 
 76. **Total de productos en inventario que tienen descripción**:
 SELECT COUNT(*) AS total_productos_con_descripcion
@@ -491,7 +474,7 @@ SELECT cu.cultivo_id, AVG(rc.rendimiento) AS rendimiento_promedio
 FROM Rendimiento_Cultivo rc
 JOIN Cultivos cu ON rc.cultivo_id = cu.cultivo_id
 GROUP BY cu.cultivo_id
-HAVING rendimiento_promedio > 50.0; -- Cambiar el valor según sea necesario
+HAVING rendimiento_promedio > 50.0;
 
 79. **Historial de pagos a empleados en el último año**:
 SELECT e.nombre, SUM(pe.monto) AS total_pagado
@@ -517,7 +500,7 @@ LIMIT 1;
 SELECT p.nombre
 FROM Productos p
 WHERE (SELECT SUM(v.cantidad) FROM Ventas v WHERE v.producto_id = p.producto_id) > 
-      (SELECT AVG(total_vendido) FROM (SELECT SUM(v.cantidad) AS total_vendido FROM Ventas v GROUP BY v.producto_id) AS sub);
+    (SELECT AVG(total_vendido) FROM (SELECT SUM(v.cantidad) AS total_vendido FROM Ventas v GROUP BY v.producto_id) AS sub);
 
 83. **Cultivos con rendimiento superior al promedio de todos los cultivos**:
 SELECT cu.cultivo_id, AVG(rc.rendimiento) AS rendimiento_promedio
@@ -545,7 +528,7 @@ LIMIT 1;
 SELECT p.nombre
 FROM Productos p
 WHERE (SELECT i.cantidad FROM Inventarios i WHERE i.producto_id = p.producto_id) < 
-      (SELECT AVG(cantidad) FROM Inventarios);
+    (SELECT AVG(cantidad) FROM Inventarios);
 
 88. **Cultivos que han sido cosechados más de una vez**:
 SELECT c.cultivo_id
@@ -589,13 +572,11 @@ FROM Clientes c
 JOIN Ventas v ON c.cliente_id = v.cliente_id
 GROUP BY c.cliente_id, c.nombre;
 
-
 95. **Obtener la cantidad total de productos en inventario por producto**:
 SELECT p.nombre, SUM(i.cantidad) AS total_stock
 FROM Productos p
 JOIN Inventarios i ON p.producto_id = i.producto_id
 GROUP BY p.producto_id, p.nombre;
-
 
 96. **Obtener la cantidad total de compras realizadas a cada proveedor**:
 SELECT pr.nombre, SUM(co.cantidad) AS total_compras
@@ -608,18 +589,15 @@ SELECT c.cultivo_id, c.fecha_siembra
 FROM Cultivos c
 WHERE c.fecha_siembra >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH);
 
-
 98. **Obtener la cantidad de cultivos sembrados por mes**:
 SELECT MONTH(fecha_siembra) AS mes, COUNT(*) AS total_cultivos
 FROM Cultivos
 GROUP BY MONTH(fecha_siembra);
 
-
 99. **Obtener el total de costos operativos por tipo de costo**:
 SELECT tipo_costo, SUM(monto) AS total_costos
 FROM Costos_Operativos
 GROUP BY tipo_costo;
-
 
 100. **Obtener el total de pagos a proveedores agrupados por método de pago**:
 SELECT metodo_pago, SUM(monto) AS total_pagado
