@@ -1,245 +1,468 @@
-CREATE DATABASE FincaAgricola;
+CREATE DATABASE Finca_Agricola;
+USE Finca_Agricola;
 
-USE FincaAgricola;
+CREATE TABLE Proveedores (
 
-CREATE TABLE Empleados (
+  proveedor_id INT AUTO_INCREMENT PRIMARY KEY,
 
-  id_empleado INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(100),
 
-  nombre VARCHAR(100) NOT NULL,
-
-  apellido VARCHAR(100) NOT NULL,
+  direccion VARCHAR(200),
 
   telefono VARCHAR(15),
 
-  direccion VARCHAR(150),
-
-  puesto VARCHAR(100) NOT NULL,
-
-  salario DECIMAL(10, 2) NOT NULL
-
-);
-
-CREATE TABLE Maquinaria (
-
-  id_maquinaria INT AUTO_INCREMENT PRIMARY KEY,
-
-  tipo VARCHAR(100) NOT NULL,
-
-  descripcion TEXT,
-
-  estado VARCHAR(50) NOT NULL,
-
-  fecha_adquisicion DATE NOT NULL
-
-);
-
-CREATE TABLE Mantenimiento (
-
-  id_mantenimiento INT AUTO_INCREMENT PRIMARY KEY,
-
-  id_maquinaria INT NOT NULL,
-
-  id_empleado INT NOT NULL,
-
-  fecha DATE NOT NULL,
-
-  descripcion TEXT,
-
-  costo DECIMAL(10, 2) NOT NULL,
-
-  CONSTRAINT fk_mantenimiento_maquinaria FOREIGN KEY (id_maquinaria) REFERENCES Maquinaria(id_maquinaria),
-
-  CONSTRAINT fk_mantenimiento_empleado FOREIGN KEY (id_empleado) REFERENCES Empleados(id_empleado)
+  email VARCHAR(100)
 
 );
 
 CREATE TABLE Productos (
 
-  id_producto INT AUTO_INCREMENT PRIMARY KEY,
+  producto_id INT AUTO_INCREMENT PRIMARY KEY,
 
   nombre VARCHAR(100) NOT NULL,
 
-  tipo VARCHAR(50) NOT NULL,
+  tipo_producto VARCHAR(50),
 
-  descripcion TEXT,
+  unidad_medida VARCHAR(20),
 
-  precio DECIMAL(10, 2) NOT NULL,
-
-  unidad_medida VARCHAR(50) NOT NULL
-
-);
-
-CREATE TABLE Inventario (
-
-  id_inventario INT AUTO_INCREMENT PRIMARY KEY,
-
-  id_producto INT NOT NULL,
-
-  cantidad DECIMAL(10, 2) NOT NULL,
-
-  fecha_actualizacion DATE NOT NULL,
-
-  CONSTRAINT fk_inventario_producto FOREIGN KEY (id_producto) REFERENCES Productos(id_producto)
+  descripcion TEXT
 
 );
 
 CREATE TABLE Clientes (
 
-  id_cliente INT AUTO_INCREMENT PRIMARY KEY,
+  cliente_id INT AUTO_INCREMENT PRIMARY KEY,
 
-  nombre VARCHAR(100) NOT NULL,
+  nombre VARCHAR(100),
 
-  telefono VARCHAR(15) NOT NULL,
+  direccion VARCHAR(200),
 
-  correo VARCHAR(100) NOT NULL,
+  telefono VARCHAR(15),
 
-  direccion VARCHAR(150) NOT NULL
+  email VARCHAR(100)
+
+);
+
+CREATE TABLE Empleados (
+
+  empleado_id INT AUTO_INCREMENT PRIMARY KEY,
+
+  nombre VARCHAR(100),
+
+  tipo_empleado VARCHAR(50),
+
+  salario DECIMAL(10,2),
+
+  fecha_ingreso DATE,
+
+  estado VARCHAR(20)
+
+);
+
+CREATE TABLE Maquinaria (
+
+  maquinaria_id INT AUTO_INCREMENT PRIMARY KEY,
+
+  nombre VARCHAR(100),
+
+  tipo_maquinaria VARCHAR(50),
+
+  estado VARCHAR(20),
+
+  fecha_adquisicion DATE,
+
+  fecha_ultimo_mantenimiento DATE
+
+);
+
+CREATE TABLE Tareas (
+
+  tarea_id INT AUTO_INCREMENT PRIMARY KEY,
+
+  descripcion TEXT,
+
+  fecha_inicio DATE,
+
+  fecha_fin DATE,
+
+  estado VARCHAR(20)
+
+);
+
+CREATE TABLE Cultivos (
+
+  cultivo_id INT AUTO_INCREMENT PRIMARY KEY,
+
+  producto_id INT,
+
+  fecha_siembra DATE,
+
+  fecha_cosecha DATE,
+
+  hectareas INT,
+
+  rendimiento_promedio DECIMAL(10,2),
+
+  FOREIGN KEY (producto_id) REFERENCES Productos(producto_id)
+
+);
+
+CREATE TABLE Inventarios (
+
+  inventario_id INT AUTO_INCREMENT PRIMARY KEY,
+
+  producto_id INT,
+
+  cantidad INT,
+
+  fecha_actualizacion DATE,
+
+  FOREIGN KEY (producto_id) REFERENCES Productos(producto_id)
 
 );
 
 CREATE TABLE Ventas (
 
-  id_venta INT AUTO_INCREMENT PRIMARY KEY,
+  venta_id INT AUTO_INCREMENT PRIMARY KEY,
 
-  id_cliente INT NOT NULL,
+  producto_id INT,
 
-  id_empleado INT NOT NULL,
+  cantidad INT,
 
-  fecha DATE NOT NULL,
+  precio_unitario DECIMAL(10,2),
 
-  total DECIMAL(10, 2) NOT NULL,
+  fecha_venta DATE,
 
-  CONSTRAINT fk_ventas_cliente FOREIGN KEY (id_cliente) REFERENCES Clientes(id_cliente),
+  cliente_id INT,
 
-  CONSTRAINT fk_ventas_empleado FOREIGN KEY (id_empleado) REFERENCES Empleados(id_empleado)
+  FOREIGN KEY (producto_id) REFERENCES Productos(producto_id),
 
-);
-
-CREATE TABLE DetalleVentas (
-
-  id_detalle INT AUTO_INCREMENT PRIMARY KEY,
-
-  id_venta INT NOT NULL,
-
-  id_producto INT NOT NULL,
-
-  cantidad DECIMAL(10, 2) NOT NULL,
-
-  precio_unitario DECIMAL(10, 2) NOT NULL,
-
-  CONSTRAINT fk_detalleventas_venta FOREIGN KEY (id_venta) REFERENCES Ventas(id_venta),
-
-  CONSTRAINT fk_detalleventas_producto FOREIGN KEY (id_producto) REFERENCES Productos(id_producto)
-
-);
-
-CREATE TABLE Proveedores (
-
-  id_proveedor INT AUTO_INCREMENT PRIMARY KEY,
-
-  nombre VARCHAR(100) NOT NULL,
-
-  telefono VARCHAR(15),
-
-  correo VARCHAR(100),
-
-  direccion VARCHAR(150)
+  FOREIGN KEY (cliente_id) REFERENCES Clientes(cliente_id)
 
 );
 
 CREATE TABLE Compras (
 
-  id_compra INT AUTO_INCREMENT PRIMARY KEY,
+  compra_id INT AUTO_INCREMENT PRIMARY KEY,
 
-  id_proveedor INT NOT NULL,
+  producto_id INT,
 
-  id_empleado INT NOT NULL,
+  cantidad INT,
 
-  fecha DATE NOT NULL,
+  precio_unitario DECIMAL(10,2),
 
-  total DECIMAL(10, 2) NOT NULL,
+  fecha_compra DATE,
 
-  CONSTRAINT fk_compras_proveedor FOREIGN KEY (id_proveedor) REFERENCES Proveedores(id_proveedor),
+  proveedor_id INT,
 
-  CONSTRAINT fk_compras_empleado FOREIGN KEY (id_empleado) REFERENCES Empleados(id_empleado)
+  FOREIGN KEY (producto_id) REFERENCES Productos(producto_id),
 
-);
-
-CREATE TABLE DetalleCompras (
-
-  id_detalle INT AUTO_INCREMENT PRIMARY KEY,
-
-  id_compra INT NOT NULL,
-
-  id_producto INT NOT NULL,
-
-  cantidad DECIMAL(10, 2) NOT NULL,
-
-  precio_unitario DECIMAL(10, 2) NOT NULL,
-
-  CONSTRAINT fk_detallecompras_compra FOREIGN KEY (id_compra) REFERENCES Compras(id_compra),
-
-  CONSTRAINT fk_detallecompras_producto FOREIGN KEY (id_producto) REFERENCES Productos(id_producto)
+  FOREIGN KEY (proveedor_id) REFERENCES Proveedores(proveedor_id)
 
 );
 
-CREATE TABLE Produccion (
+CREATE TABLE Historial_Empleados (
 
-  id_produccion INT AUTO_INCREMENT PRIMARY KEY,
+  historial_id INT AUTO_INCREMENT PRIMARY KEY,
 
-  id_producto INT NOT NULL,
+  empleado_id INT,
 
-  fecha DATE NOT NULL,
+  tipo_cambio VARCHAR(50),
 
-  cantidad DECIMAL(10, 2) NOT NULL,
+  valor_anterior DECIMAL(10,2),
 
-  CONSTRAINT fk_produccion_producto FOREIGN KEY (id_producto) REFERENCES Productos(id_producto)
+  valor_nuevo DECIMAL(10,2),
 
-);
+  fecha_cambio DATE,
 
-CREATE TABLE RelacionProveedoresProductos (
-
-  id_relacion INT AUTO_INCREMENT PRIMARY KEY,
-
-  id_proveedor INT NOT NULL,
-
-  id_producto INT NOT NULL,
-
-  CONSTRAINT fk_relacionproveedores_proveedor FOREIGN KEY (id_proveedor) REFERENCES Proveedores(id_proveedor),
-
-  CONSTRAINT fk_relacionproveedores_producto FOREIGN KEY (id_producto) REFERENCES Productos(id_producto)
+  FOREIGN KEY (empleado_id) REFERENCES Empleados(empleado_id)
 
 );
 
-CREATE TABLE RelacionClientesProductos (
+CREATE TABLE Asignacion_Maquinaria (
 
-  id_relacion INT AUTO_INCREMENT PRIMARY KEY,
+  asignacion_id INT AUTO_INCREMENT PRIMARY KEY,
 
-  id_cliente INT NOT NULL,
+  maquinaria_id INT,
 
-  id_producto INT NOT NULL,
+  tarea_id INT,
 
-  CONSTRAINT fk_relacionclientes_cliente FOREIGN KEY (id_cliente) REFERENCES Clientes(id_cliente),
+  fecha_inicio DATE,
 
-  CONSTRAINT fk_relacionclientes_producto FOREIGN KEY (id_producto) REFERENCES Productos(id_producto)
+  fecha_fin DATE,
+
+  estado VARCHAR(20),
+
+  FOREIGN KEY (maquinaria_id) REFERENCES Maquinaria(maquinaria_id),
+
+  FOREIGN KEY (tarea_id) REFERENCES Tareas(tarea_id)
 
 );
 
-CREATE TABLE AsignacionTareas (
+CREATE TABLE Mantenimiento_Maquinaria (
 
-  id_tarea INT AUTO_INCREMENT PRIMARY KEY,
+  mantenimiento_id INT AUTO_INCREMENT PRIMARY KEY,
 
-  id_empleado INT NOT NULL,
+  maquinaria_id INT,
 
-  descripcion TEXT NOT NULL,
+  fecha_mantenimiento DATE,
 
-  fecha_asignacion DATE NOT NULL,
+  tipo_mantenimiento VARCHAR(50),
 
-  fecha_limite DATE,
+  costo DECIMAL(10,2),
 
-  estado VARCHAR(50) NOT NULL,
+  descripcion TEXT,
 
-  CONSTRAINT fk_asignaciontareas_empleado FOREIGN KEY (id_empleado) REFERENCES Empleados(id_empleado)
+  FOREIGN KEY (maquinaria_id) REFERENCES Maquinaria(maquinaria_id)
+
+);
+
+CREATE TABLE Costos_Operativos (
+
+  costo_id INT AUTO_INCREMENT PRIMARY KEY,
+
+  tipo_costo VARCHAR(50),
+
+  monto DECIMAL(10,2),
+
+  fecha DATE
+
+);
+
+CREATE TABLE Pagos_Proveedores (
+
+  pago_id INT AUTO_INCREMENT PRIMARY KEY,
+
+  proveedor_id INT,
+
+  monto DECIMAL(10,2),
+
+  fecha_pago DATE,
+
+  metodo_pago VARCHAR(50),
+
+  FOREIGN KEY (proveedor_id) REFERENCES Proveedores(proveedor_id)
+
+);
+
+CREATE TABLE Pagos_Empleados (
+
+  pago_id INT AUTO_INCREMENT PRIMARY KEY,
+
+  empleado_id INT,
+
+  monto DECIMAL(10,2),
+
+  fecha_pago DATE,
+
+  metodo_pago VARCHAR(50),
+
+  FOREIGN KEY (empleado_id) REFERENCES Empleados(empleado_id)
+
+);
+
+CREATE TABLE Roles (
+
+  rol_id INT AUTO_INCREMENT PRIMARY KEY,
+
+  nombre_rol VARCHAR(50),
+
+  descripcion TEXT
+
+);
+
+CREATE TABLE Usuarios (
+
+  usuario_id INT AUTO_INCREMENT PRIMARY KEY,
+
+  nombre_usuario VARCHAR(50),
+
+  contrasena VARCHAR(255),
+
+  rol_id INT,
+
+  FOREIGN KEY (rol_id) REFERENCES Roles(rol_id)
+
+);
+
+CREATE TABLE Auditoria_Accessos (
+
+  auditoria_id INT AUTO_INCREMENT PRIMARY KEY,
+
+  usuario_id INT,
+
+  accion VARCHAR(100),
+
+  fecha_hora TIMESTAMP,
+
+  detalles TEXT,
+
+  FOREIGN KEY (usuario_id) REFERENCES Usuarios(usuario_id)
+
+);
+
+CREATE TABLE Historial_Ventas (
+
+  historial_id INT AUTO_INCREMENT PRIMARY KEY,
+
+  venta_id INT,
+
+  tipo_cambio VARCHAR(50),
+
+  valor_anterior DECIMAL(10,2),
+
+  valor_nuevo DECIMAL(10,2),
+
+  fecha_cambio DATE,
+
+  FOREIGN KEY (venta_id) REFERENCES Ventas(venta_id)
+
+);
+
+CREATE TABLE Historial_Inventarios (
+
+  historial_id INT AUTO_INCREMENT PRIMARY KEY,
+
+  inventario_id INT,
+
+  tipo_cambio VARCHAR(50),
+
+  cantidad_anterior INT,
+
+  cantidad_nueva INT,
+
+  fecha_cambio DATE,
+
+  FOREIGN KEY (inventario_id) REFERENCES Inventarios(inventario_id)
+
+);
+
+CREATE TABLE Control_Calidad (
+
+  calidad_id INT AUTO_INCREMENT PRIMARY KEY,
+
+  producto_id INT,
+
+  fecha_revision DATE,
+
+  resultado VARCHAR(50),
+
+  observaciones TEXT,
+
+  FOREIGN KEY (producto_id) REFERENCES Productos(producto_id)
+
+);
+
+CREATE TABLE Rendimiento_Cultivo (
+
+  rendimiento_id INT AUTO_INCREMENT PRIMARY KEY,
+
+  cultivo_id INT,
+
+  rendimiento DECIMAL(10,2),
+
+  fecha_calculo DATE,
+
+  FOREIGN KEY (cultivo_id) REFERENCES Cultivos(cultivo_id)
+
+);
+
+CREATE TABLE Ubicacion_Cultivo (
+
+  ubicacion_id INT AUTO_INCREMENT PRIMARY KEY,
+
+  cultivo_id INT,
+
+  zona VARCHAR(100),
+
+  hectareas INT,
+
+  FOREIGN KEY (cultivo_id) REFERENCES Cultivos(cultivo_id)
+
+);
+
+CREATE TABLE Tareas_Mantenimiento (
+
+  tarea_mantenimiento_id INT AUTO_INCREMENT PRIMARY KEY,
+
+  maquinaria_id INT,
+
+  descripcion TEXT,
+
+  frecuencia VARCHAR(50),
+
+  fecha_programada DATE,
+
+  fecha_realizada DATE,
+
+  estado VARCHAR(20),
+
+  FOREIGN KEY (maquinaria_id) REFERENCES Maquinaria(maquinaria_id)
+
+);
+
+CREATE TABLE Evaluacion_Desempeno (
+
+  evaluacion_id INT AUTO_INCREMENT PRIMARY KEY,
+
+  empleado_id INT,
+
+  fecha_evaluacion DATE,
+
+  puntuacion DECIMAL(3,1),
+
+  comentarios TEXT,
+
+  FOREIGN KEY (empleado_id) REFERENCES Empleados(empleado_id)
+
+);
+
+CREATE TABLE Cosecha (
+
+  cosecha_id INT AUTO_INCREMENT PRIMARY KEY,
+
+  cultivo_id INT,
+
+  cantidad_recolectada DECIMAL(10,2),
+
+  fecha_cosecha DATE,
+
+  calidad_control VARCHAR(50),
+
+  destino VARCHAR(100),
+
+  FOREIGN KEY (cultivo_id) REFERENCES Cultivos(cultivo_id)
+
+);
+
+CREATE TABLE Costos_Produccion (
+
+  costo_produccion_id INT AUTO_INCREMENT PRIMARY KEY,
+
+  cultivo_id INT,
+
+  tipo_costo VARCHAR(50),
+
+  monto DECIMAL(10,2),
+
+  fecha DATE,
+
+  FOREIGN KEY (cultivo_id) REFERENCES Cultivos(cultivo_id)
+
+);
+
+CREATE TABLE Pagos_Vendedores (
+
+  pago_vendedor_id INT AUTO_INCREMENT PRIMARY KEY,
+
+  vendedor_id INT,
+
+  monto DECIMAL(10,2),
+
+  fecha_pago DATE,
+
+  metodo_pago VARCHAR(50),
+
+  FOREIGN KEY (vendedor_id) REFERENCES Empleados(empleado_id)
 
 );
