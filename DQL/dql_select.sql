@@ -1,756 +1,310 @@
-1. Cantidad total de cada producto en inventario
-SELECT p.nombre AS Producto, SUM(i.cantidad) AS Cantidad_Total
-FROM Productos p
-JOIN Inventario i ON p.id_producto = i.id_producto
-GROUP BY p.id_producto;
+1. Estado Actual de los Inventarios**
+SELECT p.nombre, i.cantidad
+FROM inventarios i
+JOIN productos p ON i.producto_id = p.producto_id;
 
-2. Productos con mas de 10 unidades en inventario
-SELECT p.nombre AS Producto, i.cantidad AS Cantidad
-FROM Productos p
-JOIN Inventario i ON p.id_producto = i.id_producto
-WHERE i.cantidad > 10;
-
-3. Última fecha de actualización del inventario por producto
-SELECT p.nombre AS Producto, MAX(i.fecha_actualizacion) AS Ultima_Actualizacion
-FROM Productos p
-JOIN Inventario i ON p.id_producto = i.id_producto
-GROUP BY p.id_producto;
-
-4. Valor total del inventario por producto
-SELECT p.nombre AS Producto, (i.cantidad * p.precio) AS Valor_Total
-FROM Productos p
-JOIN Inventario i ON p.id_producto = i.id_producto;
-
-5. Producción total por producto en un mes específico
-SELECT p.nombre AS Producto, SUM(pr.cantidad) AS Produccion_Total
-FROM Productos p
-JOIN Produccion pr ON p.id_producto = pr.id_producto
-WHERE MONTH(pr.fecha) = 01 AND YEAR(pr.fecha) = 2024
-GROUP BY p.id_producto;
-
-6. Promedio diario de producción por producto en noviembre de 2024
-SELECT p.nombre AS Producto, AVG(pr.cantidad) AS Promedio_Diario
-FROM Productos p
-JOIN Produccion pr ON p.id_producto = pr.id_producto
-WHERE MONTH(pr.fecha) = 02 AND YEAR(pr.fecha) = 2024
-GROUP BY p.id_producto;
-
-7. Producto con mayor cantidad producida en un mes específico
-SELECT p.nombre AS Producto, SUM(pr.cantidad) AS Cantidad_Producida
-FROM Productos p
-JOIN Produccion pr ON p.id_producto = pr.id_producto
-WHERE MONTH(pr.fecha) = 02 AND YEAR(pr.fecha) = 2024
-GROUP BY p.id_producto
-ORDER BY Cantidad_Producida DESC
-LIMIT 1;
-
-8. Ventas totales realizadas por cada empleado
-SELECT e.nombre AS Empleado, e.apellido, COUNT(v.id_venta) AS Ventas_Realizadas
-FROM Empleados e
-JOIN Ventas v ON e.id_empleado = v.id_empleado
-GROUP BY e.id_empleado;
-
-9. Total de ingresos generados por ventas en un mes de 2024
-SELECT SUM(v.total) AS Total_Ingresos
+2. Ventas Totales por Producto
+SELECT p.nombre, SUM(v.cantidad * v.precio_unitario) AS ventas_totales
 FROM Ventas v
-WHERE MONTH(v.fecha) = 01 AND YEAR(v.fecha) = 2024;
+JOIN Productos p ON v.producto_id = p.producto_id
+GROUP BY p.nombre;
 
-10. Productos más vendidos en un mes de 2024
-SELECT p.nombre AS Producto, SUM(dv.cantidad) AS Cantidad_Vendida
-FROM Productos p
-JOIN DetalleVentas dv ON p.id_producto = dv.id_producto
-JOIN Ventas v ON dv.id_venta = v.id_venta
-WHERE MONTH(v.fecha) = 01 AND YEAR(v.fecha) = 2024
-GROUP BY p.id_producto
-ORDER BY Cantidad_Vendida DESC;
-
-11. Total gastado en compras a proveedores en un mes de 2024
-SELECT SUM(c.total) AS Total_Compras
-FROM Compras c
-WHERE MONTH(c.fecha) = 11 AND YEAR(c.fecha) = 2024;
-
-12. Proveedores más utilizados en noviembre de 2024
-SELECT p.nombre AS Proveedor, COUNT(c.id_compra) AS Compras_Realizadas
-FROM Proveedores p
-JOIN Compras c ON p.id_proveedor = c.id_proveedor
-WHERE MONTH(c.fecha) = 11 AND YEAR(c.fecha) = 2024
-GROUP BY p.id_proveedor
-ORDER BY Compras_Realizadas DESC;
-
-13. Total de costos por mantenimiento en noviembre de 2024
-SELECT SUM(m.costo) AS Total_Costos_Mantenimiento
-FROM Mantenimiento m
-WHERE MONTH(m.fecha) = 01 AND YEAR(m.fecha) = 2024;
-
-14. Maquinarias con mayores costos de mantenimiento en noviembre de 2024
-SELECT ma.tipo AS Maquinaria, SUM(m.costo) AS Costo_Total
-FROM Maquinaria ma
-JOIN Mantenimiento m ON ma.id_maquinaria = m.id_maquinaria
-WHERE MONTH(m.fecha) = 02 AND YEAR(m.fecha) = 2024
-GROUP BY ma.id_maquinaria
-ORDER BY Costo_Total DESC;
-
-15. Empleados con más tareas asignadas en noviembre de 2024
-SELECT e.nombre AS Empleado, COUNT(t.id_tarea) AS Tareas_Asignadas
-FROM Empleados e
-JOIN AsignacionTareas t ON e.id_empleado = t.id_empleado
-WHERE MONTH(t.fecha_asignacion) = 11 AND YEAR(t.fecha_asignacion) = 2024
-GROUP BY e.id_empleado
-ORDER BY Tareas_Asignadas DESC;
-
-16. Empleados involucrados en más mantenimientos
-SELECT e.nombre AS Empleado, COUNT(m.id_mantenimiento) AS Mantenimientos_Realizados
-FROM Empleados e
-JOIN Mantenimiento m ON e.id_empleado = m.id_empleado
-GROUP BY e.id_empleado
-ORDER BY Mantenimientos_Realizados DESC;
-
-17. Productos más vendidos y el ingreso generado por cada uno
-SELECT p.nombre AS Producto, 
-    SUM(dv.cantidad) AS Cantidad_Vendida,
-    SUM(dv.cantidad * dv.precio_unitario) AS Total_Generado
-FROM Productos p
-JOIN DetalleVentas dv ON p.id_producto = dv.id_producto
-GROUP BY p.id_producto
-ORDER BY Total_Generado DESC;
-
-18. Ingreso promedio diario en noviembre de 2024
-SELECT AVG(Diario.Total) AS Ingreso_Promedio_Diario
-FROM (
-    SELECT DATE(v.fecha) AS Fecha, SUM(v.total) AS Total
-    FROM Ventas v
-    WHERE MONTH(v.fecha) = 02 AND YEAR(v.fecha) = 2024
-    GROUP BY Fecha
-) Diario;
-
-19. Proveedor más económico para cada producto
-SELECT rpp.id_producto, p.nombre AS Producto, pr.nombre AS Proveedor, MIN(c.total) AS Costo_Minimo
-FROM RelacionProveedoresProductos rpp
-JOIN Proveedores pr ON rpp.id_proveedor = pr.id_proveedor
-JOIN Compras c ON pr.id_proveedor = c.id_proveedor
-JOIN Productos p ON rpp.id_producto = p.id_producto
-GROUP BY rpp.id_producto, pr.id_proveedor;
-
-20. Empleados con mayor desempeño (ventas + tareas + mantenimientos)
-SELECT e.nombre AS Empleado, 
-    (COUNT(v.id_venta) + COUNT(t.id_tarea) + COUNT(m.id_mantenimiento)) AS Desempeño
-FROM Empleados e
-LEFT JOIN Ventas v ON e.id_empleado = v.id_empleado
-LEFT JOIN AsignacionTareas t ON e.id_empleado = t.id_empleado
-LEFT JOIN Mantenimiento m ON e.id_empleado = m.id_empleado
-GROUP BY e.id_empleado
-ORDER BY Desempeño DESC;
-
-21. Productos con cantidad mayor a 10 unidades en inventario
+3. Productos con inventario superior a 100 unidades:**
 SELECT p.nombre, i.cantidad 
-FROM Inventario i 
-JOIN Productos p ON i.id_producto = p.id_producto 
-WHERE i.cantidad > 10;
+FROM Inventarios i
+JOIN Productos p ON i.producto_id = p.producto_id
+WHERE i.cantidad > 100;
 
-22. Valor total de inventario por producto
-SELECT p.nombre, SUM(i.cantidad * p.precio) AS valor_inventario 
-FROM Inventario i 
-JOIN Productos p ON i.id_producto = p.id_producto 
+4. Total de inventario disponible por producto:**
+SELECT p.nombre, SUM(i.cantidad) AS total_inventario
+FROM Inventarios i
+JOIN Productos p ON i.producto_id = p.producto_id
 GROUP BY p.nombre;
 
-23. Fecha de la última actualización de inventario
-SELECT MAX(fecha_actualizacion) AS ultima_actualizacion FROM Inventario;
+5. Productos con más de 50 unidades y su valor total en inventario (precio unitario \* cantidad):**
+SELECT p.nombre, i.cantidad, (i.cantidad * v.precio_unitario) AS valor_inventario
+FROM Inventarios i
+JOIN Productos p ON i.producto_id = p.producto_id
+JOIN Ventas v ON p.producto_id = v.producto_id
+WHERE i.cantidad > 50;
 
-24. Cantidad total de productos en inventario por tipo de producto
-SELECT p.tipo, SUM(i.cantidad) AS cantidad_total 
-FROM Inventario i 
-JOIN Productos p ON i.id_producto = p.id_producto 
-GROUP BY p.tipo;
+6. **Productos más vendidos (por cantidad):**
+SELECT p.nombre, SUM(v.cantidad) AS cantidad_vendida
+FROM Ventas v
+JOIN Productos p ON v.producto_id = p.producto_id
+GROUP BY p.nombre
+ORDER BY cantidad_vendida DESC;
 
-25. Productos sin movimiento en el inventario en los últimos 30 días
-SELECT p.nombre 
-FROM Productos p 
-LEFT JOIN Inventario i ON p.id_producto = i.id_producto 
-WHERE i.fecha_actualizacion < CURDATE() - INTERVAL 30 DAY;
-
-26. Producción total mensual de cada producto
-SELECT p.nombre, MONTH(pr.fecha) AS mes, SUM(pr.cantidad) AS total_producido 
-FROM Produccion pr 
-JOIN Productos p ON pr.id_producto = p.id_producto 
-GROUP BY p.nombre, MONTH(pr.fecha);
-
-27. Productos con mayor producción en el último año
-SELECT p.nombre, SUM(pr.cantidad) AS total_producido 
-FROM Produccion pr 
-JOIN Productos p ON pr.id_producto = p.id_producto 
-WHERE pr.fecha >= CURDATE() - INTERVAL 1 YEAR 
-GROUP BY p.nombre 
-ORDER BY total_producido DESC 
-LIMIT 5;
-
-28. Producción diaria promedio por producto
-SELECT p.nombre, AVG(pr.cantidad) AS produccion_diaria_promedio 
-FROM Produccion pr 
-JOIN Productos p ON pr.id_producto = p.id_producto 
-GROUP BY p.nombre;
-
-29. Costo total de producción según el precio del producto
-SELECT p.nombre, SUM(pr.cantidad * p.precio) AS costo_total_produccion 
-FROM Produccion pr 
-JOIN Productos p ON pr.id_producto = p.id_producto 
-GROUP BY p.nombre;
-
-30. Días sin registro de producción en los últimos 3 meses
-SELECT DISTINCT pr.fecha 
-FROM Produccion pr 
-WHERE pr.fecha NOT IN (
-    SELECT DISTINCT fecha 
-    FROM Produccion 
-    WHERE fecha >= CURDATE() - INTERVAL 3 MONTH
-);
-
-31. Ingresos totales generados por cada empleado en ventas
-SELECT e.nombre, e.apellido, SUM(v.total) AS ingresos_generados 
-FROM Ventas v 
-JOIN Empleados e ON v.id_empleado = e.id_empleado 
-GROUP BY e.nombre, e.apellido 
-ORDER BY ingresos_generados DESC;
-
-32. Ventas diarias promedio por empleado
-SELECT e.nombre, e.apellido, AVG(v.total) AS ventas_diarias_promedio 
-FROM Ventas v 
-JOIN Empleados e ON v.id_empleado = e.id_empleado 
-GROUP BY e.nombre, e.apellido;
-
-33. Ventas realizadas en días festivos (ejemplo: Navidad, Año Nuevo)
-SELECT * 
-FROM Ventas 
-WHERE fecha IN ('2024-12-25', '2024-01-01');
-
-34. Productos más vendidos del año
-SELECT p.nombre, SUM(dv.cantidad) AS total_vendido 
-FROM DetalleVentas dv 
-JOIN Productos p ON dv.id_producto = p.id_producto 
-JOIN Ventas v ON dv.id_venta = v.id_venta 
-WHERE YEAR(v.fecha) = YEAR(CURDATE()) 
-GROUP BY p.nombre 
-ORDER BY total_vendido DESC 
-LIMIT 5;
-
-35. Proveedores con mayor volumen de compras en el último mes
-SELECT pr.nombre, SUM(c.total) AS volumen_compras 
-FROM Compras c 
-JOIN Proveedores pr ON c.id_proveedor = pr.id_proveedor 
-WHERE c.fecha >= CURDATE() - INTERVAL 1 MONTH 
-GROUP BY pr.nombre 
-ORDER BY volumen_compras DESC;
-
-36. Costo promedio por compra por proveedor
-SELECT pr.nombre, AVG(c.total) AS costo_promedio 
-FROM Compras c 
-JOIN Proveedores pr ON c.id_proveedor = pr.id_proveedor 
+7. **Total de productos comprados y vendidos por proveedor:**
+SELECT pr.nombre, SUM(c.cantidad) AS total_comprado, SUM(v.cantidad) AS total_vendido
+FROM Compras c
+JOIN Proveedores pr ON c.proveedor_id = pr.proveedor_id
+JOIN Ventas v ON c.producto_id = v.producto_id
 GROUP BY pr.nombre;
 
-37. Productos comprados más frecuentemente por proveedor
-SELECT pr.nombre AS proveedor, p.nombre AS producto, COUNT(dc.id_producto) AS veces_comprado 
-FROM DetalleCompras dc 
-JOIN Productos p ON dc.id_producto = p.id_producto 
-JOIN Compras c ON dc.id_compra = c.id_compra 
-JOIN Proveedores pr ON c.id_proveedor = pr.id_proveedor 
-GROUP BY pr.nombre, p.nombre 
-ORDER BY veces_comprado DESC;
-
-38. Compras realizadas en los últimos 7 días
-SELECT * 
-FROM Compras 
-WHERE fecha >= CURDATE() - INTERVAL 7 DAY;
-
-39. Costo total de compras en el último trimestre
-SELECT SUM(total) AS costo_total 
-FROM Compras 
-WHERE fecha >= CURDATE() - INTERVAL 3 MONTH;
-
-40. Tareas pendientes de empleados
-SELECT e.nombre, e.apellido, COUNT(t.id_tarea) AS tareas_pendientes 
-FROM AsignacionTareas t 
-JOIN Empleados e ON t.id_empleado = e.id_empleado 
-WHERE t.estado = 'Pendiente' 
-GROUP BY e.nombre, e.apellido;
-
-41. Promedio de salario por puesto
-SELECT puesto, AVG(salario) AS salario_promedio
-FROM Empleados
-GROUP BY puesto;
-
-42. Empleados con más participación en mantenimientos de maquinaria
-SELECT e.nombre, e.apellido, COUNT(m.id_mantenimiento) AS mantenimientos 
-FROM Mantenimiento m 
-JOIN Empleados e ON m.id_empleado = e.id_empleado 
-GROUP BY e.nombre, e.apellido 
-ORDER BY mantenimientos DESC;
-
-43. Productos que tienen un precio superior al precio promedio de todos los productos
-SELECT p.nombre, p.precio
-FROM Productos p
-WHERE p.precio > (SELECT AVG(precio) FROM Productos);
-
-44. Maquinaria más utilizada en mantenimientos
-SELECT m.tipo, COUNT(mt.id_mantenimiento) AS total_mantenimientos 
-FROM Maquinaria m 
-JOIN Mantenimiento mt ON m.id_maquinaria = mt.id_maquinaria 
-GROUP BY m.tipo 
-ORDER BY total_mantenimientos DESC;
-
-45. Costo total de mantenimientos por maquinaria en el último año
-SELECT m.tipo, SUM(mt.costo) AS costo_total 
-FROM Maquinaria m 
-JOIN Mantenimiento mt ON m.id_maquinaria = mt.id_maquinaria 
-WHERE mt.fecha >= CURDATE() - INTERVAL 1 YEAR 
-GROUP BY m.tipo;
-
-46. Maquinarias adquiridas hace más de 5 años
-SELECT * 
-FROM Maquinaria 
-WHERE fecha_adquisicion <= CURDATE() - INTERVAL 5 YEAR;
-
-47. Promedio de costos por mantenimiento por maquinaria
-SELECT m.tipo, AVG(mt.costo) AS costo_promedio 
-FROM Maquinaria m 
-JOIN Mantenimiento mt ON m.id_maquinaria = mt.id_maquinaria 
-GROUP BY m.tipo;
-
-48. Empleados que han realizado más ventas que el promedio de todos los empleados
-SELECT e.nombre, e.apellido, COUNT(v.id_venta) AS ventas_realizadas
-FROM Empleados e
-JOIN Ventas v ON e.id_empleado = v.id_empleado
-GROUP BY e.id_empleado
-HAVING ventas_realizadas > (SELECT AVG(ventas_realizadas)
-    FROM (SELECT COUNT(id_venta) AS ventas_realizadas
-    FROM Ventas
-    GROUP BY id_empleado) AS subconsulta);
-
-
-49. Clientes con más compras realizadas
-SELECT c.nombre, COUNT(v.id_venta) AS total_compras 
-FROM Clientes c 
-JOIN Ventas v ON c.id_cliente = v.id_cliente 
-GROUP BY c.nombre 
-ORDER BY total_compras DESC;
-
-50. Clientes que han gastado más que el promedio de todos los clientes
-SELECT c.nombre, SUM(v.total) AS total_gastado
-FROM Clientes c
-JOIN Ventas v ON c.id_cliente = v.id_cliente
-GROUP BY c.id_cliente
-HAVING total_gastado > (SELECT AVG(total_gastado)
-FROM (SELECT SUM(total) AS total_gastado
+8. **Ventas totales por mes:**
+SELECT MONTH(fecha_venta) AS mes, SUM(cantidad * precio_unitario) AS total_ventas
 FROM Ventas
-GROUP BY id_cliente) AS subconsulta);
-
-51. Promedio de gasto por cliente
-SELECT c.nombre, AVG(v.total) AS gasto_promedio 
-FROM Clientes c 
-JOIN Ventas v ON c.id_cliente = v.id_cliente 
-GROUP BY c.nombre;
-
-52. Clientes que no han realizado compras en el último año
-SELECT c.nombre 
-FROM Clientes c 
-WHERE c.id_cliente NOT IN (
-    SELECT DISTINCT id_cliente 
-    FROM Ventas 
-    WHERE fecha >= CURDATE() - INTERVAL 1 YEAR
-);
-
-53. Ranking de clientes por total gastado
-SELECT c.nombre, SUM(v.total) AS total_gastado 
-FROM Clientes c 
-JOIN Ventas v ON c.id_cliente = v.id_cliente 
-GROUP BY c.nombre 
-ORDER BY total_gastado DESC;
-
-54. Productos que no han sido vendidos en un mes específico
-SELECT p.nombre
-FROM Productos p
-WHERE p.id_producto NOT IN (
-    SELECT dv.id_producto
-    FROM DetalleVentas dv
-    JOIN Ventas v ON dv.id_venta = v.id_venta
-    WHERE MONTH(v.fecha) = 5
-);
-
-55. Gastos totales en compras del último mes
-SELECT SUM(total) AS gastos_totales 
-FROM Compras 
-WHERE fecha >= CURDATE() - INTERVAL 1 MONTH;
-
-56. Productos con stock inferior al promedio de stock de todos los productos
-SELECT p.nombre, i.cantidad
-FROM Productos p
-JOIN Inventario i ON p.id_producto = i.id_producto
-WHERE i.cantidad < (SELECT AVG(cantidad) FROM Inventario);
-
-57. Empleados con ventas superiores al promedio mensual de ventas de todos los empleados
-SELECT e.nombre, e.apellido, COUNT(v.id_venta) AS ventas_realizadas
-FROM Empleados e
-JOIN Ventas v ON e.id_empleado = v.id_empleado
-GROUP BY e.id_empleado
-HAVING ventas_realizadas > (SELECT AVG(ventas_realizadas)
-FROM (SELECT COUNT(id_venta) AS ventas_realizadas
-FROM Ventas
-GROUP BY id_empleado) AS subconsulta);
-
-58. Productos con stock insuficiente para los últimos pedidos
-SELECT p.nombre, i.cantidad AS stock, SUM(dv.cantidad) AS demandado 
-FROM Productos p 
-JOIN Inventario i ON p.id_producto = i.id_producto 
-JOIN DetalleVentas dv ON p.id_producto = dv.id_producto 
-GROUP BY p.nombre, i.cantidad 
-HAVING i.cantidad < demandado;
-
-59. Promedio de costos de producción por mes
-SELECT DATE_FORMAT(fecha, '%Y-%m') AS mes, AVG(cantidad * p.precio) AS costo_promedio 
-FROM Produccion pr 
-JOIN Productos p ON pr.id_producto = p.id_producto 
 GROUP BY mes;
 
+9. **Total de compras por proveedor y producto:**
+SELECT pr.nombre, p.nombre, SUM(c.cantidad) AS cantidad_comprada
+FROM Compras c
+JOIN Proveedores pr ON c.proveedor_id = pr.proveedor_id
+JOIN Productos p ON c.producto_id = p.producto_id
+GROUP BY pr.nombre, p.nombre;
 
-60. Ingresos totales por cliente en el último año
+10. **Ventas totales por mes de cada producto:**
+SELECT p.nombre, MONTH(v.fecha_venta) AS mes, SUM(v.cantidad * v.precio_unitario) AS total_ventas
+FROM Ventas v
+JOIN Productos p ON v.producto_id = p.producto_id
+GROUP BY p.nombre, mes;
 
-SELECT c.nombre, SUM(v.total) AS ingresos_totales 
-FROM Clientes c 
-JOIN Ventas v ON c.id_cliente = v.id_cliente 
-WHERE v.fecha >= CURDATE() - INTERVAL 1 YEAR 
-GROUP BY c.nombre 
-ORDER BY ingresos_totales DESC;
+11. **Productos con mayor cantidad de ventas en el último año:**
+SELECT p.nombre, SUM(v.cantidad) AS cantidad_vendida
+FROM Ventas v
+JOIN Productos p ON v.producto_id = p.producto_id
+WHERE v.fecha_venta > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+GROUP BY p.nombre
+ORDER BY cantidad_vendida DESC;
 
+12. **Costo de mantenimiento de maquinaria por tipo:**
+SELECT m.tipo_maquinaria, SUM(mm.costo) AS costo_mantenimiento
+FROM Mantenimiento_Maquinaria mm
+JOIN Maquinaria m ON mm.maquinaria_id = m.maquinaria_id
+GROUP BY m.tipo_maquinaria;
 
-61. Promedio mensual de ventas por empleado
-SELECT e.nombre, DATE_FORMAT(v.fecha, '%Y-%m') AS mes, AVG(v.total) AS promedio_ventas 
-FROM Ventas v 
-JOIN Empleados e ON v.id_empleado = e.id_empleado 
-GROUP BY e.nombre, mes;
+13. **Costo total de mantenimiento por maquinaria en el último año:**
+SELECT m.nombre, SUM(mm.costo) AS costo_mantenimiento
+FROM Mantenimiento_Maquinaria mm
+JOIN Maquinaria m ON mm.maquinaria_id = m.maquinaria_id
+WHERE mm.fecha_mantenimiento > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+GROUP BY m.nombre;
 
-64. Productos más vendidos en cada trimestre
+14. **Evaluación de desempeño de empleados (últimos 6 meses):**
+SELECT e.nombre, AVG(ed.puntuacion) AS promedio_desempeno
+FROM Evaluacion_Desempeno ed
+JOIN Empleados e ON ed.empleado_id = e.empleado_id
+WHERE ed.fecha_evaluacion > DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+GROUP BY e.nombre;
 
-SELECT 
-    QUARTER(v.fecha) AS trimestre, 
-    p.nombre, 
-    SUM(dv.cantidad) AS total_vendido 
-FROM DetalleVentas dv 
-JOIN Productos p ON dv.id_producto = p.id_producto 
-JOIN Ventas v ON dv.id_venta = v.id_venta 
-GROUP BY trimestre, p.nombre 
-ORDER BY trimestre, total_vendido DESC;
-
-65. Producción total por producto en el último año
-SELECT p.nombre, SUM(pr.cantidad) AS produccion_total 
-FROM Produccion pr 
-JOIN Productos p ON pr.id_producto = p.id_producto 
-WHERE pr.fecha >= CURDATE() - INTERVAL 1 YEAR 
-GROUP BY p.nombre 
-ORDER BY produccion_total DESC;
-
-66. Días con mayor producción acumulada
-SELECT fecha, SUM(cantidad) AS produccion_diaria 
-FROM Produccion 
-GROUP BY fecha 
-ORDER BY produccion_diaria DESC 
-LIMIT 5;
-
-
-67. Relación entre producción y ventas de un producto específico
-SELECT 
-    p.nombre, 
-    (SELECT SUM(cantidad) FROM Produccion WHERE id_producto = 1) AS produccion_total, 
-    (SELECT SUM(dv.cantidad) FROM DetalleVentas dv WHERE dv.id_producto = 1) AS ventas_totales 
-FROM Productos p 
-WHERE p.id_producto = 1;
+15. **Empleados con mejor desempeño en el último trimestre:**
+SELECT e.nombre, AVG(ed.puntuacion) AS promedio_desempeno
+FROM Evaluacion_Desempeno ed
+JOIN Empleados e ON ed.empleado_id = e.empleado_id
+WHERE ed.fecha_evaluacion > DATE_SUB(CURDATE(), INTERVAL 3 MONTH)
+GROUP BY e.nombre
+ORDER BY promedio_desempeno DESC;
 
 
-68. Cantidad de productos en inventario no producidos en el último trimestre
-SELECT p.nombre, i.cantidad 
-FROM Productos p 
-JOIN Inventario i ON p.id_producto = i.id_producto 
-WHERE p.id_producto NOT IN (
-    SELECT DISTINCT id_producto 
-    FROM Produccion 
-    WHERE fecha >= CURDATE() - INTERVAL 3 MONTH
-);
+16. **Gastos operativos totales por tipo de costo:**
+SELECT tipo_costo, SUM(monto) AS total_gastos
+FROM Costos_Operativos
+GROUP BY tipo_costo;
 
-
-69. Ventas promedio por cliente en cada mes
-SELECT c.nombre, DATE_FORMAT(v.fecha, '%Y-%m') AS mes, AVG(v.total) AS ventas_promedio 
-FROM Ventas v 
-JOIN Clientes c ON v.id_cliente = c.id_cliente 
-GROUP BY c.nombre, mes;
-
-70. Top 5 productos con mayor ganancia en ventas
-SELECT p.nombre, SUM(dv.cantidad * dv.precio_unitario) AS ganancia 
-FROM DetalleVentas dv 
-JOIN Productos p ON dv.id_producto = p.id_producto 
-GROUP BY p.nombre 
-ORDER BY ganancia DESC 
-LIMIT 5;
-
-
-71. Días con mayores ventas totales
-SELECT fecha, SUM(total) AS ventas_totales 
-FROM Ventas 
-GROUP BY fecha 
-ORDER BY ventas_totales DESC 
-LIMIT 5;
-
-
-72. Clientes con más productos diferentes comprados
-SELECT c.nombre, COUNT(DISTINCT dv.id_producto) AS productos_comprados 
-FROM Clientes c 
-JOIN Ventas v ON c.id_cliente = v.id_cliente 
-JOIN DetalleVentas dv ON v.id_venta = dv.id_venta 
-GROUP BY c.nombre 
-ORDER BY productos_comprados DESC;
-
-73. Costo total de inventario actual (cantidad * precio unitario)
-SELECT p.nombre, i.cantidad * p.precio AS costo_total 
-FROM Inventario i 
-JOIN Productos p ON i.id_producto = p.id_producto;
-
-
-74. Relación entre compras y ventas mensuales
-WITH ComprasPorMes AS (
-    SELECT DATE_FORMAT(fecha, '%Y-%m') AS mes, SUM(total) AS total_compras
-    FROM Compras
-    GROUP BY mes
-),
-VentasPorMes AS (
-    SELECT DATE_FORMAT(fecha, '%Y-%m') AS mes, SUM(total) AS total_ventas
-    FROM Ventas
-    GROUP BY mes
-)
-SELECT 
-    c.mes, 
-    c.total_compras, 
-    IFNULL(v.total_ventas, 0) AS total_ventas
-FROM ComprasPorMes c
-LEFT JOIN VentasPorMes v ON c.mes = v.mes;
-
-
-75. Productos que no tienen inventario suficiente para cubrir ventas previstas
-SELECT p.nombre, i.cantidad AS stock, SUM(dv.cantidad) AS ventas_previstas 
-FROM Productos p 
-JOIN Inventario i ON p.id_producto = i.id_producto 
-JOIN DetalleVentas dv ON p.id_producto = dv.id_producto 
-GROUP BY p.nombre, i.cantidad 
-HAVING i.cantidad < ventas_previstas;
-
-76. Proveedores con más productos asociados
-SELECT pr.nombre, COUNT(r.id_producto) AS productos_asociados 
-FROM Proveedores pr 
-JOIN RelacionProveedoresProductos r ON pr.id_proveedor = r.id_proveedor 
-GROUP BY pr.nombre 
-ORDER BY productos_asociados DESC;
-
-77. Total de ventas realizadas por cada empleado
-SELECT 
-    e.nombre, 
-    e.apellido, 
-    SUM(v.total) AS total_ventas
-FROM 
-    Empleados e
-JOIN 
-    Ventas v 
-ON 
-    e.id_empleado = v.id_empleado
-GROUP BY 
-    e.id_empleado, e.nombre, e.apellido;
-
-
-78. Productos más vendidos por cantidad
-SELECT 
-    p.nombre, 
-    SUM(dv.cantidad) AS cantidad_vendida
-FROM 
-    Productos p
-JOIN 
-    DetalleVentas dv 
-ON 
-    p.id_producto = dv.id_producto
-GROUP BY 
-    p.id_producto, p.nombre
-ORDER BY 
-    cantidad_vendida DESC
-LIMIT 5;
-
-79. Promedio de salario por puesto de empleado
-SELECT 
-    puesto, 
-    AVG(salario) AS salario_promedio
-FROM 
-    Empleados
-GROUP BY 
-    puesto;
-
-
-80. Total de compras por proveedor en el último mes
-SELECT 
-    pr.nombre, 
-    SUM(c.total) AS total_compras
-FROM 
-    Proveedores pr
-JOIN 
-    Compras c ON pr.id_proveedor = c.id_proveedor
-WHERE 
-    c.fecha >= CURDATE() - INTERVAL 1 MONTH
-GROUP BY 
-    pr.id_proveedor;
-
-
-81. Empleados con el mayor número de tareas asignadas
-SELECT e.nombre, e.apellido, COUNT(at.id_tarea) AS tareas_asignadas
+17.**Empleados con salario superior al promedio:**
+SELECT e.nombre, e.salario
 FROM Empleados e
-JOIN AsignacionTareas at ON e.id_empleado = at.id_empleado
-GROUP BY e.id_empleado
-ORDER BY tareas_asignadas DESC
-LIMIT 5;
+WHERE e.salario > (SELECT AVG(salario) FROM Empleados);
 
-82.  Costos de mantenimiento por maquinaria
-SELECT m.tipo, SUM(ma.costo) AS total_mantenimiento
-FROM Maquinaria m
-JOIN Mantenimiento ma ON m.id_maquinaria = ma.id_maquinaria
-GROUP BY m.id_maquinaria;
+18. **Empleados con menor desempeño en los últimos 6 meses:**
+SELECT e.nombre, AVG(ed.puntuacion) AS promedio_desempeno
+FROM Evaluacion_Desempeno ed
+JOIN Empleados e ON ed.empleado_id = e.empleado_id
+WHERE ed.fecha_evaluacion > DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+GROUP BY e.nombre
+ORDER BY promedio_desempeno ASC
+LIMIT 1;
 
-83. Empleados con el salario más alto por puesto
-SELECT puesto, nombre, apellido, salario
-FROM Empleados e
-WHERE salario = (
-    SELECT MAX(salario)
-    FROM Empleados
-    WHERE puesto = e.puesto
-);
-
-
-84. Total de producción de cada producto por mes
-SELECT p.nombre, YEAR(pr.fecha) AS año, MONTH(pr.fecha) AS mes, SUM(pr.cantidad) AS total_producido
-FROM Productos p
-JOIN Produccion pr ON p.id_producto = pr.id_producto
-GROUP BY p.id_producto, año, mes   
-ORDER BY año DESC, mes DESC;
-
-
-
-85. Productos comprados en el último trimestre
-SELECT p.nombre, SUM(dc.cantidad) AS cantidad_comprada
-FROM Productos p
-JOIN DetalleCompras dc ON p.id_producto = dc.id_producto
-JOIN Compras c ON dc.id_compra = c.id_compra
-WHERE c.fecha >= CURDATE() - INTERVAL 3 MONTH
-GROUP BY p.id_producto;
-
-
-86. Empleados que han realizado más ventas en el último año
-SELECT e.nombre, e.apellido, COUNT(v.id_venta) AS ventas_realizadas
-FROM Empleados e
-JOIN Ventas v ON e.id_empleado = v.id_empleado
-WHERE v.fecha >= CURDATE() - INTERVAL 1 YEAR
-GROUP BY e.id_empleado
-ORDER BY ventas_realizadas DESC
-LIMIT 5;
-
-87. Proveedores con los productos más vendidos
-SELECT pr.nombre, p.nombre AS producto, SUM(dv.cantidad) AS cantidad_vendida
-FROM Proveedores pr
-JOIN RelacionProveedoresProductos rpp ON pr.id_proveedor = rpp.id_proveedor
-JOIN Productos p ON rpp.id_producto = p.id_producto
-JOIN DetalleVentas dv ON p.id_producto = dv.id_producto
-GROUP BY pr.id_proveedor, p.id_producto
-ORDER BY cantidad_vendida DESC
-LIMIT 5;
-
-
-88. Promedio de cantidad vendida por producto
-SELECT p.nombre, AVG(dv.cantidad) AS cantidad_promedio
-FROM Productos p
-JOIN DetalleVentas dv ON p.id_producto = dv.id_producto
-GROUP BY p.id_producto;
-
-89. Empleados que tienen tareas pendientes por completar
-SELECT e.nombre, e.apellido, at.descripcion
-FROM Empleados e
-JOIN AsignacionTareas at ON e.id_empleado = at.id_empleado
-WHERE at.estado != 'Completada';
-
-90. Cuáles son los productos más vendidos en el último año
-SELECT p.nombre, SUM(dv.cantidad) AS cantidad_vendida
-FROM Productos p
-JOIN DetalleVentas dv ON p.id_producto = dv.id_producto
-JOIN Ventas v ON dv.id_venta = v.id_venta
-WHERE v.fecha >= CURDATE() - INTERVAL 1 YEAR
-GROUP BY p.id_producto;
-
-91. Total de compras realizadas por cada proveedor en el último trimestre
-SELECT pr.nombre, SUM(c.total) AS total_compras
-FROM Proveedores pr
-JOIN Compras c ON pr.id_proveedor = c.id_proveedor
-WHERE c.fecha >= CURDATE() - INTERVAL 3 MONTH
-GROUP BY pr.id_proveedor;
-
-92. Clientes que han realizado compras en un rango de fechas específico:
-SELECT c.nombre, COUNT(v.id_venta) AS total_compras 
-FROM Clientes c 
-JOIN Ventas v ON c.id_cliente = v.id_cliente 
-WHERE v.fecha BETWEEN '2024-01-01' AND '2024-01-31' 
+19. **Ingresos por ventas en los últimos 12 meses por cliente:**
+Copiar códigoSELECT c.nombre, SUM(v.cantidad * v.precio_unitario) AS total_compras
+FROM Ventas v
+JOIN Clientes c ON v.cliente_id = c.cliente_id
+WHERE v.fecha_venta > DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
 GROUP BY c.nombre;
 
+20. **Producto con la mayor cantidad en inventario:**
+SELECT p.nombre, i.cantidad
+FROM Productos p
+JOIN Inventarios i ON p.producto_id = i.producto_id
+WHERE i.cantidad = (SELECT MAX(cantidad) FROM Inventarios);
 
-93. Total de ventas realizadas en un día específico:
-SELECT SUM(total) AS total_ventas 
-FROM Ventas 
-WHERE fecha = '2024-01-15';
+21. **Cantidad total de productos vendidos por cada cliente**
+SELECT cl.nombre AS cliente, SUM(v.cantidad) AS total_vendido
+FROM ventas v
+JOIN clientes cl ON v.cliente_id = cl.cliente_id
+GROUP BY cl.nombre;
 
-
-94. Total de ingresos generados por cada cliente:
-SELECT c.nombre, SUM(v.total) AS total_ingresos 
-FROM Clientes c 
-JOIN Ventas v ON c.id_cliente = v.id_cliente 
-GROUP BY c.nombre 
-ORDER BY total_ingresos DESC;
-
-95. Proveedores que han realizado compras superiores a un monto específico en el último mes
-SELECT pr.nombre, SUM(c.total) AS total_compras 
-FROM Proveedores pr 
-JOIN Compras c ON pr.id_proveedor = c.id_proveedor 
-WHERE c.fecha >= CURDATE() - INTERVAL 1 MONTH 
-GROUP BY pr.nombre 
-HAVING total_compras > 5000;
-
-96. Empleados que han realizado ventas en un rango de fechas específico:
-SELECT e.nombre, e.apellido, COUNT(v.id_venta) AS Ventas_Realizadas 
-FROM Empleados e 
-JOIN Ventas v ON e.id_empleado = v.id_empleado 
-WHERE v.fecha BETWEEN '2024-02-01' AND '2024-02-28' 
-GROUP BY e.id_empleado;
-
-
-97. Productos que tienen un precio superior al promedio de precios de todos los productos:
-SELECT p.nombre, p.precio 
-FROM Productos p 
-WHERE p.precio > (SELECT AVG(precio) FROM Productos);
-
-98. Total de costos de producción por producto en un mes específico
-SELECT p.nombre, SUM(pr.cantidad * p.precio) AS Costo_Total 
-FROM Produccion pr 
-JOIN Productos p ON pr.id_producto = p.id_producto 
-WHERE MONTH(pr.fecha) = 01 AND YEAR(pr.fecha) = 2024 
+22. Costos de producción por cultivo
+SELECT p.nombre AS cultivo, SUM(cp.monto) AS total_costos
+FROM costos_produccion cp
+JOIN cultivos cu ON cp.cultivo_id = cu.cultivo_id
+JOIN productos p ON cu.producto_id = p.producto_id
 GROUP BY p.nombre;
 
+23. **Promedio de ventas por mes**
+SELECT MONTH(v.fecha_venta) AS mes, AVG(v.precio_unitario * v.cantidad) AS promedio_ventas
+FROM ventas v
+GROUP BY mes;
 
-99. Cantidad total de productos en inventario agrupados por proveedor
-SELECT pr.nombre AS Proveedor, SUM(i.cantidad) AS Total_Productos 
-FROM Inventario i 
-JOIN RelacionProveedoresProductos rpp ON i.id_producto = rpp.id_producto 
-JOIN Proveedores pr ON rpp.id_proveedor = pr.id_proveedor 
+24. **Productos más vendidos**
+SELECT p.nombre AS producto, SUM(v.cantidad) AS total_vendido
+FROM ventas v
+JOIN productos p ON v.producto_id = p.producto_id
+GROUP BY p.nombre
+ORDER BY total_vendido DESC
+LIMIT 10;
+
+25. **Empleados con mejor desempeño**:
+SELECT e.nombre, MAX(ev.puntuacion) AS puntuacion_max
+FROM Evaluacion_Desempeno ev
+JOIN Empleados e ON ev.empleado_id = e.empleado_id
+GROUP BY e.nombre
+ORDER BY puntuacion_max DESC;
+
+26. **Historial de desempeño de un empleado específico**:
+SELECT e.nombre, ev.fecha_evaluacion, ev.puntuacion, ev.comentarios
+FROM Evaluacion_Desempeno ev
+JOIN Empleados e ON ev.empleado_id = e.empleado_id
+WHERE e.empleado_id = 1;
+
+28. **Desempeño total de todos los empleados**:
+SELECT e.nombre, SUM(ev.puntuacion) AS total_puntuacion
+FROM Evaluacion_Desempeno ev
+JOIN Empleados e ON ev.empleado_id = e.empleado_id
+GROUP BY e.nombre;
+
+29. **Pagos realizados a proveedores**:
+SELECT pr.nombre, SUM(pp.monto) AS total_pagado
+FROM Pagos_Proveedores pp
+JOIN Proveedores pr ON pp.proveedor_id = pr.proveedor_id
 GROUP BY pr.nombre;
 
-100. Total de ingresos por ventas agrupados por mes
-SELECT DATE_FORMAT(v.fecha, '%Y-%m') AS Mes, 
-       SUM(dv.cantidad * p.precio) AS Ingresos_Totales
+30. **Métodos de pago utilizados por los proveedores**:
+SELECT metodo_pago, COUNT(*) AS cantidad_pagados
+FROM Pagos_Proveedores
+GROUP BY metodo_pago;
+
+31. **Pagos acumulados a empleados hasta la fecha**:
+SELECT e.nombre, SUM(pe.monto) AS total_pagado
+FROM Pagos_Empleados pe
+JOIN Empleados e ON pe.empleado_id = e.empleado_id
+GROUP BY e.nombre;
+
+32. **Historial de ventas**:
+SELECT hv.historial_id, v.fecha_venta, p.nombre AS producto, hv.tipo_cambio, hv.valor_anterior, hv.valor_nuevo
+FROM Historial_Ventas hv
+JOIN Ventas v ON hv.venta_id = v.venta_id
+JOIN Productos p ON v.producto_id = p.producto_id;
+
+33. **Historial de cambios de empleados**:
+SELECT he.historial_id, e.nombre, he.tipo_cambio, he.valor_anterior, he.valor_nuevo, he.fecha_cambio
+FROM Historial_Empleados he
+JOIN Empleados e ON he.empleado_id = e.empleado_id;
+
+34. **Auditoría de accesos recientes**:
+SELECT a.accion, u.nombre_usuario, a.fecha_hora, a.detalles
+FROM Auditoria_Accessos a
+JOIN Usuarios u ON a.usuario_id = u.usuario_id
+ORDER BY a.fecha_hora DESC
+LIMIT 10;
+
+35. **Auditoría de accesos por usuario**:
+SELECT u.nombre_usuario, COUNT(a.accion) AS total_accesos
+FROM Auditoria_Accessos a
+JOIN Usuarios u ON a.usuario_id = u.usuario_id
+GROUP BY u.nombre_usuario;
+
+36. **Historial de mantenimiento de maquinaria**:
+SELECT m.nombre AS maquinaria, mm.fecha_mantenimiento, mm.tipo_mantenimiento, mm.costo
+FROM Mantenimiento_Maquinaria mm
+JOIN Maquinaria m ON mm.maquinaria_id = m.maquinaria_id;
+
+37. **Rendimiento promedio por cultivo**:
+SELECT c.cultivo_id, AVG(rc.rendimiento) AS rendimiento_promedio
+FROM Rendimiento_Cultivo rc
+JOIN Cultivos c ON rc.cultivo_id = c.cultivo_id
+GROUP BY c.cultivo_id;
+
+38. **Control de calidad de productos**:
+SELECT p.nombre, c.fecha_revision, c.resultado, c.observaciones
+FROM Control_Calidad c
+JOIN Productos p ON c.producto_id = p.producto_id;
+
+39. **Calidad de cosechas realizadas**:
+SELECT co.cosecha_id, cu.cultivo_id, cu.fecha_cosecha, co.cantidad_recolectada, co.calidad_control
+FROM Cosecha co
+JOIN Cultivos cu ON co.cultivo_id = cu.cultivo_id;
+
+40. **Rendimiento por hectárea de cada cultivo**:
+SELECT c.cultivo_id, c.hectareas, SUM(r.rendimiento) / SUM(c.hectareas) AS rendimiento_por_hectarea
+FROM Cultivos c
+JOIN Rendimiento_Cultivo r ON c.cultivo_id = r.cultivo_id
+GROUP BY c.cultivo_id, c.hectareas;
+
+41. **Historial de tareas realizadas**:
+SELECT ta.tarea_id, ta.descripcion, a.fecha_inicio, a.fecha_fin, a.estado
+FROM Tareas ta
+JOIN Asignacion_Maquinaria a ON ta.tarea_id = a.tarea_id
+WHERE a.fecha_fin IS NOT NULL;
+
+41. **Costos de mantenimiento por maquinaria**:
+SELECT m.nombre, SUM(mm.costo) AS total_mantenimiento
+FROM Mantenimiento_Maquinaria mm
+JOIN Maquinaria m ON mm.maquinaria_id = m.maquinaria_id
+GROUP BY m.nombre;
+
+Consultas de Subconsultas y Agregaciones Complejas
+
+42. **Total de ventas por cliente y con subtotales**:
+SELECT c.nombre,
+    SUM(v.cantidad * v.precio_unitario) AS total_ventas,
+    (SELECT COUNT(*) FROM Ventas) AS total_transacciones
 FROM Ventas v
-JOIN DetalleVentas dv ON v.id_venta = dv.id_venta
-JOIN Productos p ON dv.id_producto = p.id_producto
-GROUP BY Mes
-ORDER BY Mes;
+JOIN Clientes c ON v.cliente_id = c.cliente_id
+GROUP BY c.nombre;
+
+43. **Resumen de calificaciones de empleados por mes**:
+SELECT YEAR(fecha_evaluacion) AS año, MONTH(fecha_evaluacion) AS mes,
+    AVG(puntuacion) AS puntuacion_promedio
+FROM Evaluacion_Desempeno
+GROUP BY YEAR(fecha_evaluacion), MONTH(fecha_evaluacion);
+
+44. **Costo total de producción por cultivo**:
+SELECT c.cultivo_id, SUM(cp.monto) AS total_costos
+FROM Costos_Produccion cp
+JOIN Cultivos c ON cp.cultivo_id = c.cultivo_id
+GROUP BY c.cultivo_id;
+
+45. **Costos operativos en proporción a los ingresos**:
+SELECT SUM(co.monto) AS total_costo,
+    (SELECT SUM(v.cantidad * v.precio_unitario) FROM Ventas v) AS total_ingresos,
+    (SUM(co.monto) / (SELECT SUM(v.cantidad * v.precio_unitario) FROM Ventas v)) * 100 AS porcentaje_costo
+FROM Costos_Operativos co;
+
+46. **Costo total por tipo de producto vendido**:
+SELECT p.tipo_producto, SUM(v.cantidad * v.precio_unitario) AS total_ingresos
+FROM Ventas v
+JOIN Productos p ON v.producto_id = p.producto_id
+GROUP BY p.tipo_producto;
+
+47. **Tendencia de producción mensual**:
+SELECT MONTH(c.fecha_siembra) AS mes, SUM(c.rendimiento_promedio) AS total_producido
+FROM Cultivos c
+GROUP BY MONTH(c.fecha_siembra);
+
+48. **Historial de productividades a nivel de cultivos**:
+SELECT c.cultivo_id, AVG(rc.rendimiento) AS productividad_media
+FROM Rendimiento_Cultivo rc
+JOIN Cultivos c ON rc.cultivo_id = c.cultivo_id
+GROUP BY c.cultivo_id;
+
+49. **Comparativa de costos de producción por tipo de costo**:
+SELECT tipo_costo, SUM(monto) AS total
+FROM Costos_Produccion
+GROUP BY tipo_costo;
+
+50. **Generación de informes de ventas mensuales**:
+SELECT MONTH(fecha_venta) AS mes, SUM(cantidad * precio_unitario) AS total_ventas
+FROM Ventas
+GROUP BY MONTH(fecha_venta);
