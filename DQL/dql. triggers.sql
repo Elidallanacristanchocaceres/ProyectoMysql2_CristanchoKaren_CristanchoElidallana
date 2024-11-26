@@ -201,3 +201,222 @@ END $$
 DELIMITER ;
 
 SELECT TotalPagosEmpleados('2024-01-15', '2024-05-10');
+
+11. Obtener el rendimiento promedio de un cultivo
+DELIMITER //
+
+CREATE FUNCTION RendimientoPromedioCultivo(cultivo_id INT) 
+RETURNS DECIMAL(10,2)
+DETERMINISTIC
+BEGIN
+    DECLARE promedio DECIMAL(10,2);
+    
+    SELECT AVG(rendimiento) INTO promedio
+    FROM Rendimiento_Cultivo
+    WHERE cultivo_id = cultivo_id;
+    
+    RETURN promedio;
+END //
+
+DELIMITER ;
+
+SELECT RendimientoPromedioCultivo(1); 
+
+
+12. Calcular el total de pagos a proveedores en un período
+DELIMITER //
+
+CREATE FUNCTION TotalPagosProveedores(fecha_inicio DATE, fecha_fin DATE) 
+RETURNS DECIMAL(10,2)
+DETERMINISTIC
+BEGIN
+    DECLARE total_pagos DECIMAL(10,2);
+    
+    SELECT SUM(monto) INTO total_pagos
+    FROM Pagos_Proveedores
+    WHERE fecha_pago BETWEEN fecha_inicio AND fecha_fin;
+    
+    RETURN total_pagos;
+END //
+
+DELIMITER ;
+
+SELECT TotalPagosProveedores('2024-01-15', '2024-05-10');
+
+
+13. Calcular el costo promedio por hectárea de un cultivo
+DELIMITER //
+
+CREATE FUNCTION CostoPromedioPorHectarea(cultivo_id INT)
+RETURNS DECIMAL(10,2)
+DETERMINISTIC
+BEGIN
+    DECLARE costo_total DECIMAL(10,2);
+    DECLARE hectareas INT;
+
+    SELECT COALESCE(SUM(monto), 0) INTO costo_total
+    FROM Costos_Produccion
+    WHERE cultivo_id = cultivo_id;
+
+    SELECT COALESCE(SUM(hectareas), 0) INTO hectareas
+    FROM Cultivos
+    WHERE cultivo_id = cultivo_id;
+
+    IF hectareas = 0 THEN
+        RETURN 0;
+    END IF;
+END //
+
+DELIMITER ;
+
+SELECT CostoPromedioPorHectarea(1);
+
+
+14. Obtener el total de tareas de mantenimiento programadas
+DELIMITER //
+
+CREATE FUNCTION TotalTareasMantenimientoProgramadas(maquinaria_id INT) 
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    DECLARE total_tareas INT;
+    
+    SELECT COUNT(*) INTO total_tareas
+    FROM Tareas_Mantenimiento
+    WHERE maquinaria_id = maquinaria_id AND estado = 'Programada';
+    
+    RETURN total_tareas;
+END //
+
+DELIMITER ;
+
+SELECT TotalTareasMantenimientoProgramadas(1);
+
+
+15. Calcular el total de cosechas realizadas de un cultivo
+DELIMITER //
+
+CREATE FUNCTION TotalCosechasRealizadas(cultivo_id INT) 
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    DECLARE total_cosechas INT;
+    
+    SELECT COUNT(*) INTO total_cosechas
+    FROM Cosecha
+    WHERE cultivo_id = cultivo_id;
+    
+    RETURN total_cosechas;
+END //
+
+DELIMITER ;
+
+SELECT TotalCosechasRealizadas(1);
+
+
+16. Calcular el total de empleados activos
+DELIMITER //
+
+CREATE FUNCTION TotalEmpleadosActivos() 
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    DECLARE total_empleados INT;
+    
+    SELECT COUNT(*) INTO total_empleados
+    FROM Empleados
+    WHERE estado = 'Activo';
+    
+    RETURN total_empleados;
+END //
+
+DELIMITER ;
+
+SELECT TotalEmpleadosActivos();
+
+
+17. Obtener el total de ingresos por ventas en un período
+DELIMITER //
+
+CREATE FUNCTION TotalIngresosPorVentas(fecha_inicio DATE, fecha_fin DATE) 
+RETURNS DECIMAL(10,2)
+DETERMINISTIC
+BEGIN
+    DECLARE total_ingresos DECIMAL(10,2);
+    
+    SELECT SUM(cantidad * precio_unitario) INTO total_ingresos
+    FROM Ventas
+    WHERE fecha_venta BETWEEN fecha_inicio AND fecha_fin;
+    
+    RETURN total_ingresos;
+END //
+
+DELIMITER ;
+
+SELECT TotalIngresosPorVentas('2024-01-15', '2024-03-06');
+
+
+18. Calcular el promedio de puntuaciones de evaluación de un empleado
+DELIMITER //
+
+CREATE FUNCTION PromedioEvaluacionesEmpleado(empleado_id INT) 
+RETURNS DECIMAL(3,1)
+DETERMINISTIC
+BEGIN
+    DECLARE promedio DECIMAL(3,1);
+    
+    SELECT AVG(puntuacion) INTO promedio
+    FROM Evaluacion_Desempeno
+    WHERE empleado_id = empleado_id;
+    
+    RETURN promedio;
+END //
+
+DELIMITER ;
+
+SELECT PromedioEvaluacionesEmpleado(1);
+
+
+19. Obtener el total de maquinaria en un estado específico
+
+DELIMITER //
+
+CREATE FUNCTION TotalMaquinariaPorEstado(estado_maquinaria VARCHAR(20)) 
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    DECLARE total_maquinaria INT;
+    
+    SELECT COUNT(*) INTO total_maquinaria
+    FROM Maquinaria
+    WHERE estado = estado_maquinaria;
+    
+    RETURN total_maquinaria;
+END //
+
+DELIMITER ;
+
+SELECT TotalMaquinariaPorEstado('Operativa');
+
+
+
+20. Calcular el costo total de producción de un cultivo
+
+DELIMITER //
+
+CREATE FUNCTION CostoTotalProduccion(cultivo_id INT)
+RETURNS DECIMAL(10,2)
+DETERMINISTIC
+BEGIN
+    DECLARE costo_total DECIMAL(10,2);
+
+    SELECT COALESCE(SUM(monto), 0) INTO costo_total
+    FROM Costos_Produccion
+    WHERE cultivo_id = cultivo_id;
+
+END //
+
+DELIMITER ;
+
+SELECT CostoTotalProduccion(1);
+
