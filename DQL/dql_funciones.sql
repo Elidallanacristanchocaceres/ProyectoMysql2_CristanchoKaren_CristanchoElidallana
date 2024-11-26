@@ -1,440 +1,374 @@
-### **1. Costo total de mantenimiento de una máquina**
-
-DELIMITER $$
-
-CREATE FUNCTION CostoTotalMantenimiento(id_maquina INT)
-RETURNS DECIMAL(10,2)
-DETERMINISTIC
-BEGIN
-    DECLARE total DECIMAL(10,2);
-    SELECT SUM(costo) INTO total
-    FROM Mantenimiento
-    WHERE id_maquinaria = id_maquina;
-    RETURN COALESCE(total, 0);
-END $$
-
-DELIMITER ;
-
-
-Probar
-SELECT CostoTotalMantenimiento(1);
-
-
-
-### *2. Número de tareas asignadas a un empleado*
-
-DELIMITER $$
-
-CREATE FUNCTION TareasAsignadasEmpleado(id_empleado INT)
-RETURNS INT
-DETERMINISTIC
-BEGIN
-    DECLARE total INT;
-    SELECT COUNT(*) INTO total
-    FROM AsignacionTareas
-    WHERE id_empleado = id_empleado;
-    RETURN total;
-END $$
-
-DELIMITER ;
-
-Probar 
-SELECT TareasAsignadasEmpleado(2);
-
-
-
-### **3. Total de ventas realizadas por un empleado**
-
-DELIMITER $$
-
-CREATE FUNCTION VentasPorEmpleado(id_empleado INT)
-RETURNS DECIMAL(10,2)
-DETERMINISTIC
-BEGIN
-    DECLARE total DECIMAL(10,2);
-    SELECT SUM(total) INTO total
-    FROM Ventas
-    WHERE id_empleado = id_empleado;
-    RETURN COALESCE(total, 0);
-END $$
-
-DELIMITER ;
-
-
-Probar
-SELECT VentasPorEmpleado(3);
-
-
-
-### **4. Cantidad total de productos vendidos en una venta**
-
-DELIMITER $$
-
-CREATE FUNCTION CantidadProductosVendidos(id_venta INT)
-RETURNS DECIMAL(10,2)
-DETERMINISTIC
-BEGIN
-    DECLARE cantidad_total DECIMAL(10,2);
-    SELECT SUM(cantidad) INTO cantidad_total
-    FROM DetalleVentas
-    WHERE id_venta = id_venta;
-    RETURN COALESCE(cantidad_total, 0);
-END $$
-
-DELIMITER ;
-
-
-Probar
-SELECT CantidadProductosVendidos(5);
-
-
-
-### **5. Promedio de salario de los empleados**
-
-DELIMITER $$
-
-CREATE FUNCTION SalarioPromedio()
-RETURNS DECIMAL(10,2)
+1. Calcular el rendimiento promedio por hectárea de un cultivo
+DELIMITER //
+CREATE FUNCTION RendimientoPromedioPorHectarea(cultivoID INT) RETURNS DECIMAL(10,2)
 DETERMINISTIC
 BEGIN
     DECLARE promedio DECIMAL(10,2);
-    SELECT AVG(salario) INTO promedio
-    FROM Empleados;
-    RETURN COALESCE(promedio, 0);
-END $$
-
+    SELECT rendimiento_promedio / hectareas 
+    INTO promedio 
+    FROM Cultivos 
+    WHERE cultivo_id = cultivoID;
+    RETURN promedio;
+END;
+//
 DELIMITER ;
 
-
-Probar
-SELECT SalarioPromedio();
+SELECT RendimientoPromedioPorHectarea(1);
 
 
-
-### **7. Cantidad total de productos comprados en una compra**
-
-DELIMITER $$
-
-CREATE FUNCTION CantidadProductosComprados(id_compra INT)
-RETURNS DECIMAL(10,2)
+2. Calcular el costo operativo total en un período
+DELIMITER //
+CREATE FUNCTION CostoOperativoTotal(inicio DATE, fin DATE) RETURNS DECIMAL(10,2)
 DETERMINISTIC
 BEGIN
-    DECLARE cantidad_total DECIMAL(10,2);
-    SELECT SUM(cantidad) INTO cantidad_total
-    FROM DetalleCompras
-    WHERE id_compra = id_compra;
-    RETURN COALESCE(cantidad_total, 0);
-END $$
-
+ DECLARE total DECIMAL(10,2);
+ SELECT SUM(monto) 
+ INTO total 
+ FROM Costos_Operativos 
+ WHERE fecha BETWEEN inicio AND fin;
+ RETURN total;
+END;
+//
 DELIMITER ;
 
-
-Probar 
-SELECT CantidadProductosComprados(3);
+SELECT CostoOperativoTotal('2024-01-01', '2024-12-31');
 
 
-
-### **8. Determinar el estado de una máquina**
-
-DELIMITER $$
-
-CREATE FUNCTION EstadoMaquina(id_maquina INT)
-RETURNS VARCHAR(50)
+3. Obtener el porcentaje de maquinaria en mantenimiento actualmente
+DELIMITER //
+CREATE FUNCTION PorcentajeMaquinariaEnMantenimiento() RETURNS DECIMAL(5,2)
 DETERMINISTIC
 BEGIN
-    DECLARE estado_actual VARCHAR(50);
-    SELECT estado INTO estado_actual
+    DECLARE total_maquinaria INT;
+    DECLARE en_mantenimiento INT;
+    DECLARE porcentaje DECIMAL(5,2);
+    
+    SELECT COUNT(*) INTO total_maquinaria FROM Maquinaria;
+    
+    SELECT COUNT(*) INTO en_mantenimiento 
     FROM Maquinaria
-    WHERE id_maquinaria = id_maquina;
-    RETURN COALESCE(estado_actual, 'Desconocido');
-END $$
+    WHERE estado = 'En Mantenimiento';
 
+    SET porcentaje = (en_mantenimiento / total_maquinaria) * 100;
+    
+    RETURN porcentaje;
+END;
+//
 DELIMITER ;
 
-
-Probar
-SELECT EstadoMaquina(2);
+SELECT PorcentajeMaquinariaEnMantenimiento();
 
 
-
-### **9. Calcular el valor total del inventario**
-
-DELIMITER $$
-
-CREATE FUNCTION ValorTotalInventario()
-RETURNS DECIMAL(10,2)
+4. Calcular el ingreso total de ventas por cliente
+DELIMITER //
+CREATE FUNCTION IngresoTotalPorCliente(clienteID INT) RETURNS DECIMAL(10,2)
 DETERMINISTIC
 BEGIN
+ DECLARE total DECIMAL(10,2);
+ SELECT SUM(cantidad * precio_unitario) 
+ INTO total 
+ FROM Ventas 
+ WHERE cliente_id = clienteID;
+ RETURN total;
+END;
+//
+DELIMITER ;
+
+SELECT IngresoTotalPorCliente(1);
+
+
+5. Calcular el salario promedio por tipo de empleado
+ DELIMITER //
+   CREATE FUNCTION SalarioPromedioPorTipo(tipo VARCHAR(50)) RETURNS DECIMAL(10,2)
+   DETERMINISTIC
+   BEGIN
+    DECLARE promedio DECIMAL(10,2);
+    SELECT AVG(salario) 
+    INTO promedio 
+    FROM Empleados 
+    WHERE tipo_empleado = tipo;
+    RETURN promedio;
+   END;
+   //
+   DELIMITER ;
+
+SELECT SalarioPromedioPorTipo('Administrador');
+
+
+6. Calcular la cantidad de productos no disponibles en inventario
+ DELIMITER //
+   CREATE FUNCTION ProductosSinInventario() RETURNS INT
+   DETERMINISTIC
+   BEGIN
+    DECLARE cantidad INT;
+    SELECT COUNT(*) 
+    INTO cantidad 
+    FROM Inventarios 
+    WHERE cantidad = 0;
+    RETURN cantidad;
+   END;
+   //
+   DELIMITER ;
+
+SELECT ProductosSinInventario();
+
+
+7. Calcular la rotación de inventario de un producto
+ DELIMITER //
+   CREATE FUNCTION RotacionDeInventario(productoID INT) RETURNS DECIMAL(10,2)
+   DETERMINISTIC
+   BEGIN
+    DECLARE rotacion DECIMAL(10,2);
+    SELECT (SUM(cantidad) / COUNT(DISTINCT fecha_actualizacion)) 
+    INTO rotacion 
+    FROM Inventarios 
+    WHERE producto_id = productoID;
+    RETURN rotacion;
+   END;
+   //
+   DELIMITER ;
+
+SELECT RotacionDeInventario(1);
+
+
+8. Calcular la cantidad total de tareas completadas
+ DELIMITER //
+   CREATE FUNCTION TareasCompletadas() RETURNS INT
+   DETERMINISTIC
+   BEGIN
+    DECLARE cantidad INT;
+    SELECT COUNT(*) 
+    INTO cantidad 
+    FROM Tareas 
+    WHERE estado = 'Completada';
+    RETURN cantidad;
+   END;
+   //
+   DELIMITER ;
+
+SELECT TareasCompletadas();
+
+
+9. Calcular el costo total de producción por cultivo
+ DELIMITER //
+   CREATE FUNCTION CostoTotalProduccion(cultivoID INT) RETURNS DECIMAL(10,2)
+   DETERMINISTIC
+   BEGIN
     DECLARE total DECIMAL(10,2);
-    SELECT SUM(I.cantidad * P.precio) INTO total
-    FROM Inventario I
-    JOIN Productos P ON I.id_producto = P.id_producto;
-    RETURN COALESCE(total, 0);
-END $$
+    SELECT SUM(monto) 
+    INTO total 
+    FROM Costos_Produccion 
+    WHERE cultivo_id = cultivoID;
+    RETURN total;
+   END;
+   //
+   DELIMITER ;
 
-DELIMITER ;
-
-
-Probar
-SELECT ValorTotalInventario();
-
+SELECT CostoTotalProduccion(1);
 
 
-### **10. Total de ventas de un cliente**
+10. Calcular la cantidad de hectáreas asignadas por zona
+ DELIMITER //
+    CREATE FUNCTION HectareasPorZona(zonaNombre VARCHAR(100)) RETURNS INT
+    DETERMINISTIC
+    BEGIN
+    DECLARE hectareasTotales INT;
+    SELECT SUM(hectareas) 
+    INTO hectareasTotales 
+    FROM Ubicacion_Cultivo 
+    WHERE zona = zonaNombre;
+    RETURN hectareasTotales;
+    END;
+    //
+    DELIMITER ;
 
-DELIMITER $$
-
-CREATE FUNCTION TotalVentasCliente(id_cliente INT)
-RETURNS DECIMAL(10,2)
-DETERMINISTIC
-BEGIN
-    DECLARE total DECIMAL(10,2);
-    SELECT SUM(total) INTO total
-    FROM Ventas
-    WHERE id_cliente = id_cliente;
-    RETURN COALESCE(total, 0);
-END $$
-
-DELIMITER ;
-
-
-Probar
-SELECT TotalVentasCliente(1);
+SELECT HectareasPorZona('Zona Norte');
 
 
+11. Estimar el costo promedio de mantenimiento por maquinaria
+    DELIMITER //
+    CREATE FUNCTION CostoPromedioMantenimiento(maquinariaID INT) RETURNS DECIMAL(10,2)
+    DETERMINISTIC
+    BEGIN
+    DECLARE promedio DECIMAL(10,2);
+    SELECT AVG(costo) 
+    INTO promedio 
+    FROM Mantenimiento_Maquinaria 
+    WHERE maquinaria_id = maquinariaID;
+    RETURN promedio;
+    END;
+    //
+    DELIMITER ;
+    
+    SELECT CostoPromedioMantenimiento(1);
+     
 
-### **11. Días transcurridos desde la última tarea asignada a un empleado**
+12. Calcular el total de ventas de un producto específico
+     DELIMITER //
+        CREATE FUNCTION TotalVentasProducto(productoID INT) RETURNS DECIMAL(10,2)
+        DETERMINISTIC
+        BEGIN
+        DECLARE total DECIMAL(10,2);
+        SELECT SUM(cantidad * precio_unitario) 
+        INTO total 
+        FROM Ventas 
+        WHERE producto_id = productoID;
+        RETURN total;
+        END;
+        //
+        DELIMITER ;
+    
+    SELECT TotalVentasProducto(1);
+    
 
-DELIMITER $$
-
-CREATE FUNCTION DiasDesdeUltimaTarea(id_empleado INT)
-RETURNS INT
-DETERMINISTIC
-BEGIN
-    DECLARE dias INT;
-    SELECT DATEDIFF(CURDATE(), MAX(fecha_asignacion)) INTO dias
-    FROM AsignacionTareas
-    WHERE id_empleado = id_empleado;
-    RETURN COALESCE(dias, -1); -- Retorna -1 si no hay tareas
-END $$
-
-DELIMITER ;
-
-Probar
-SELECT DiasDesdeUltimaTarea(2);
-
-
-
-### **12. Número total de productos distintos vendidos**
-
-DELIMITER $$
-
-CREATE FUNCTION TotalProductosVendidos()
-RETURNS INT
-DETERMINISTIC
-BEGIN
-    DECLARE total INT;
-    SELECT COUNT(DISTINCT id_producto) INTO total
-    FROM DetalleVentas;
-    RETURN COALESCE(total, 0);
-END $$
-
-DELIMITER ;
-
-
-Probar
-SELECT TotalProductosVendidos();
-
-
-
-### **13. Promedio de costo de mantenimiento de todas las máquinas**
-
-DELIMITER $$
-
-CREATE FUNCTION PromedioCostoMantenimiento()
-RETURNS DECIMAL(10,2)
+13.  Calcular el tiempo promedio de respuesta en tareas
+DELIMITER //
+CREATE FUNCTION TiempoPromedioTareas() RETURNS DECIMAL(10,2)
 DETERMINISTIC
 BEGIN
     DECLARE promedio DECIMAL(10,2);
-    SELECT AVG(costo) INTO promedio
-    FROM Mantenimiento;
-    RETURN COALESCE(promedio, 0);
-END $$
-
+    SELECT IFNULL(AVG(TIMESTAMPDIFF(DAY, fecha_inicio, fecha_fin)), 0)
+    INTO promedio
+    FROM Tareas
+    WHERE estado = 'Completada'
+      AND fecha_inicio IS NOT NULL
+      AND fecha_fin IS NOT NULL;
+    
+    RETURN promedio;
+END;
+//
 DELIMITER ;
 
+SELECT TiempoPromedioTareas();
+    
 
-Probar
-SELECT PromedioCostoMantenimiento();
-
-
-
-### **14. Costo total de producción de un producto**
-
-DELIMITER $$
-
-CREATE FUNCTION CostoTotalProduccion(id_producto INT)
-RETURNS DECIMAL(10,2)
+14. Calcular la cantidad total de maquinaria en uso
+DELIMITER //
+CREATE FUNCTION MaquinariaEnUso() RETURNS INT
 DETERMINISTIC
 BEGIN
-    DECLARE total DECIMAL(10,2);
-    SELECT SUM(cantidad * precio) INTO total
-    FROM Produccion P
-    JOIN Productos PR ON P.id_producto = PR.id_producto
-    WHERE P.id_producto = id_producto;
-    RETURN COALESCE(total, 0);
-END $$
-
+    DECLARE cantidad INT;
+    SELECT COUNT(*) 
+    INTO cantidad 
+    FROM Maquinaria 
+    WHERE estado = 'En Uso';
+    RETURN cantidad;
+END;
+//
 DELIMITER ;
 
-
-Probar
-SELECT CostoTotalProduccion(4);
+SELECT MaquinariaEnUso();
 
 
-
-### **15. Última fecha de actualización de inventario**
-
-DELIMITER $$
-
-CREATE FUNCTION UltimaActualizacionInventario()
-RETURNS DATE
-DETERMINISTIC
-BEGIN
-    DECLARE ultima_fecha DATE;
-    SELECT MAX(fecha_actualizacion) INTO ultima_fecha
-    FROM Inventario;
-    RETURN ultima_fecha;
-END $$
-
-DELIMITER ;
-
-
-Probar
-SELECT UltimaActualizacionInventario();
-
-
-
-### **16. Costo total de una compra**
-
-DELIMITER $$
-
-CREATE FUNCTION CostoTotalCompra(id_compra INT)
-RETURNS DECIMAL(10,2)
-DETERMINISTIC
-BEGIN
-    DECLARE total DECIMAL(10,2);
-    SELECT SUM(cantidad * precio_unitario) INTO total
-    FROM DetalleCompras
-    WHERE id_compra = id_compra;
-    RETURN COALESCE(total, 0);
-END $$
-
-DELIMITER ;
-
-
-Probar
-SELECT CostoTotalCompra(3);
-
-
-
-
-### **17. Número total de clientes que han realizado compras**
-
-DELIMITER $$
-
-CREATE FUNCTION ClientesConCompras()
-RETURNS INT
+15. Obtener el número total de clientes
+DELIMITER //
+CREATE FUNCTION TotalClientes() RETURNS INT
 DETERMINISTIC
 BEGIN
     DECLARE total INT;
-    SELECT COUNT(DISTINCT id_cliente) INTO total
-    FROM Ventas;
-    RETURN COALESCE(total, 0);
-END $$
-
+    SELECT COUNT(*) 
+    INTO total 
+    FROM Clientes;
+    RETURN total;
+END;
+//
 DELIMITER ;
 
-
-Probar
-SELECT ClientesConCompras();
+SELECT TotalClientes();
 
 
-
-### **18. Promedio de ventas por cliente**
-
-DELIMITER $$
-
-CREATE FUNCTION PromedioVentasPorCliente()
-RETURNS DECIMAL(10,2)
+16. Calcular el número total de tareas pendientes
+DELIMITER //
+CREATE FUNCTION TareasPendientes() RETURNS INT
 DETERMINISTIC
 BEGIN
-    DECLARE promedio DECIMAL(10,2);
-    SELECT AVG(total) INTO promedio
-    FROM Ventas;
-    RETURN COALESCE(promedio, 0);
-END $$
-
-DELIMITER ;
-
-
-Probar
-SELECT PromedioVentasPorCliente();
-
-
-
-### **19. Total de empleados con tareas pendientes**
-
-DELIMITER $$
-
-CREATE FUNCTION EmpleadosConTareasPendientes()
-RETURNS INT
-DETERMINISTIC
-BEGIN
-    DECLARE total INT;
-    SELECT COUNT(DISTINCT id_empleado) INTO total
-    FROM AsignacionTareas
+    DECLARE cantidad INT;
+    SELECT COUNT(*) 
+    INTO cantidad 
+    FROM Tareas 
     WHERE estado = 'Pendiente';
-    RETURN COALESCE(total, 0);
-END $$
-
+    RETURN cantidad;
+END;
+//
 DELIMITER ;
 
-
-Probar
-SELECT EmpleadosConTareasPendientes();
+SELECT TareasPendientes();
 
 
-
-
-### **20. Ganancia neta por producto (ventas - costo de producción)**
-
-DELIMITER $$
-
-CREATE FUNCTION GananciaNetaPorProducto(id_producto INT)
-RETURNS DECIMAL(10,2)
+17. Calcular el porcentaje de empleados activos
+DELIMITER //
+CREATE FUNCTION PorcentajeEmpleadosActivos() RETURNS DECIMAL(5,2)
 DETERMINISTIC
 BEGIN
-    DECLARE total_ventas DECIMAL(10,2);
-    DECLARE costo_produccion DECIMAL(10,2);
-    DECLARE ganancia DECIMAL(10,2);
+    DECLARE total_empleados INT;
+    DECLARE empleados_activos INT;
+    DECLARE porcentaje DECIMAL(5,2);
+    
+    SELECT COUNT(*) INTO total_empleados FROM Empleados;
+    
+    SELECT COUNT(*) INTO empleados_activos 
+    FROM Empleados
+    WHERE estado = 'Activo';
 
-    SELECT SUM(cantidad * precio_unitario) INTO total_ventas
-    FROM DetalleVentas
-    WHERE id_producto = id_producto;
-
-    SELECT SUM(cantidad * precio) INTO costo_produccion
-    FROM Produccion P
-    JOIN Productos PR ON P.id_producto = PR.id_producto
-    WHERE P.id_producto = id_producto;
-
-    SET ganancia = COALESCE(total_ventas, 0) - COALESCE(costo_produccion, 0);
-    RETURN ganancia;
-END $$
-
+    SET porcentaje = (empleados_activos / total_empleados) * 100;
+    
+    RETURN porcentaje;
+END;
+//
 DELIMITER ;
 
+SELECT PorcentajeEmpleadosActivos();
 
-Probar
-SELECT GananciaNetaPorProducto(5);
+
+18. **Función para obtener el total de ventas de un cliente específico**
+DELIMITER //
+CREATE FUNCTION TotalVentasPorCliente(clienteID INT) RETURNS DECIMAL(10,2)
+DETERMINISTIC
+BEGIN
+    DECLARE total DECIMAL(10,2);
+    SELECT SUM(cantidad * precio_unitario) 
+    INTO total 
+    FROM Ventas 
+    WHERE cliente_id = clienteID;
+    RETURN total;
+END;
+//
+DELIMITER ;
+
+SELECT TotalVentasPorCliente(1); 
+
+
+19. **Función para obtener el promedio de ventas por producto**
+DELIMITER //
+CREATE FUNCTION PromedioVentasPorProducto(productoID INT) RETURNS DECIMAL(10,2)
+DETERMINISTIC
+BEGIN
+    DECLARE promedio DECIMAL(10,2);
+    SELECT AVG(cantidad) 
+    INTO promedio 
+    FROM Ventas 
+    WHERE producto_id = productoID;
+    RETURN promedio;
+END;
+//
+DELIMITER ;
+SELECT PromedioVentasPorProducto(1);
+
+20. **Función para calcular el inventario total de un producto**
+DELIMITER //
+CREATE FUNCTION InventarioTotalProducto(productoID INT) RETURNS INT
+DETERMINISTIC
+BEGIN
+    DECLARE totalInventario INT;
+    SELECT SUM(I.cantidad) 
+    INTO totalInventario 
+    FROM Inventarios I
+    WHERE I.producto_id = productoID;
+    RETURN totalInventario;
+END;
+//
+DELIMITER ;
+
+SELECT InventarioTotalProducto(3); 
+
 
