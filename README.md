@@ -494,3 +494,4 @@ Ingreso y Producción:
 Las funcionalidades de este sistema se implementan a través de funciones almacenadas (funciones SQL) que permiten realizar cálculos como el rendimiento de cultivos, costos operativos, ventas, compras, salarios, entre otros. Estas funciones permiten consultar y procesar la información almacenada en las bases de datos de forma eficiente.
 
 Cada función está diseñada para manejar distintos aspectos de la finca, lo que facilita la toma de decisiones y la planificación agrícola.
+
