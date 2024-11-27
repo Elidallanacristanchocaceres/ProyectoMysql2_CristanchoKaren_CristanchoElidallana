@@ -298,172 +298,172 @@ Este sistema de gestión integral es crucial para optimizar las operaciones de l
 Este proyecto está diseñado para gestionar la información de ventas, inventarios, proveedores, empleados, maquinaria, y más, mediante procedimientos almacenados en una base de datos SQL. A continuación se describen los procedimientos que permiten interactuar con las distintas tablas y manejar las operaciones clave de este sistema.
 
 Procedimientos:
-1. Registrar Nueva Venta
+## 1. Registrar Nueva Venta
 Este procedimiento permite registrar una nueva venta, verificando si el producto existe en el inventario y si hay suficiente cantidad disponible. En caso afirmativo, se realiza la venta y se actualiza el inventario en consecuencia.
 
-2. Registrar Nuevo Proveedor
+## 2. Registrar Nuevo Proveedor
 Permite agregar un nuevo proveedor al sistema, registrando su nombre, dirección, teléfono y correo electrónico en la tabla correspondiente.
 
-3. Registrar Nuevo Empleado
+## 3. Registrar Nuevo Empleado
 Este procedimiento registra un nuevo empleado en el sistema, incluyendo su nombre, tipo de empleado, salario, fecha de ingreso y estado (activo o inactivo).
 
-4. Actualizar Estado de Maquinaria
+## 4. Actualizar Estado de Maquinaria
 Este procedimiento permite actualizar el estado de una maquinaria (por ejemplo, marcarla como en mantenimiento o en funcionamiento) en la base de datos.
 
-5. Registrar Mantenimiento de Maquinaria
+## 5. Registrar Mantenimiento de Maquinaria
 Permite registrar el mantenimiento de una maquinaria, almacenando detalles como el tipo de mantenimiento realizado, el costo y una descripción. Además, actualiza el estado de la maquinaria a "En mantenimiento".
 
-6. Actualizar Inventario
+## 6. Actualizar Inventario
 Este procedimiento actualiza la cantidad de productos en el inventario. Si el producto ya existe, simplemente se ajusta la cantidad; si no, se agrega el producto a la base de datos.
 
-7. Registrar Nueva Compra
+## 7. Registrar Nueva Compra
 Este procedimiento registra una nueva compra de productos, almacenando los detalles de la transacción, como el proveedor, la cantidad adquirida, el precio unitario y la fecha de compra. También actualiza el inventario con la nueva cantidad.
 
-8. Actualizar Estado de Tarea
+## 8. Actualizar Estado de Tarea
 Permite actualizar el estado de una tarea en el sistema, como cambiar su estado de "Pendiente" a "Completada" o cualquier otro estado que se considere necesario.
 
-9. Registrar Nueva Tarea
+## 9. Registrar Nueva Tarea
 Este procedimiento se utiliza para crear nuevas tareas en el sistema, definiendo su descripción, fecha de inicio y fin, y estado inicial.
 
-10. Registrar Historial de Cambios de Empleado
+## 10. Registrar Historial de Cambios de Empleado
 Este procedimiento registra cualquier cambio en los datos de un empleado, como el ajuste de su salario, para mantener un historial de cambios en el sistema.
 
-11. Registrar Historial de Cambios en Inventario
+## 11. Registrar Historial de Cambios en Inventario
 Permite registrar cualquier ajuste en la cantidad de productos en el inventario, como una corrección de cantidad debido a un error, asegurando que se mantenga un historial de todos los cambios.
 
-12. Actualizar Rendimiento de Cultivo
+## 12. Actualizar Rendimiento de Cultivo
 Este procedimiento permite actualizar el rendimiento promedio de un cultivo en la base de datos, lo que facilita el seguimiento del desempeño de los cultivos.
 
-13. Registrar Control de Calidad
+## 13. Registrar Control de Calidad
 Permite registrar la información sobre las revisiones de calidad de los productos, incluyendo el resultado de la revisión y cualquier observación relevante.
 
-14. Registrar Cosecha
+## 14. Registrar Cosecha
 Este procedimiento permite registrar una cosecha, almacenando detalles como la cantidad recolectada, la fecha de cosecha, el destino y el control de calidad asociado.
 
-15. Actualizar Fecha de Actualización de Producto
+## 15. Actualizar Fecha de Actualización de Producto
 Este procedimiento actualiza la fecha de última actualización de un producto en el inventario, lo que permite un mejor seguimiento de los cambios en los productos.
 
-16. Registrar Pago a Proveedor
+## 16. Registrar Pago a Proveedor
 Permite registrar el pago realizado a un proveedor, especificando el monto y la fecha del pago.
 
-17. Registrar Ingreso de Empleado
+## 17. Registrar Ingreso de Empleado
 Este procedimiento actualiza la fecha de ingreso de un empleado en el sistema, en caso de que se necesite modificar o ajustar esta fecha.
 
-18. Registrar Devolución de Venta
+## 18. Registrar Devolución de Venta
 Este procedimiento permite manejar la devolución de productos de una venta, asegurándose de que la cantidad devuelta no exceda la cantidad original de la venta. También actualiza el inventario y la venta correspondiente.
 
-19. Generar Informe de Ventas
+## 19. Generar Informe de Ventas
 Genera un informe con todas las ventas realizadas entre dos fechas específicas, proporcionando una visión clara de las transacciones en ese rango de tiempo.
 
-20. Generar Informe de Mantenimiento
+## 20. Generar Informe de Mantenimiento
 Este procedimiento genera un informe detallado de las actividades de mantenimiento realizadas en las maquinarias en un rango de fechas determinado.
 
 
-## FUNCIONES
+## **FUNCIONES**
 Este sistema tiene como objetivo optimizar la gestión de una finca agrícola mediante la implementación de diversas funciones que permiten calcular, monitorear y gestionar aspectos clave del cultivo, la maquinaria, el inventario, las ventas, el personal y los costos operativos. A través de funciones SQL implementadas, los usuarios pueden obtener información detallada sobre el rendimiento de los cultivos, el costo operativo, el mantenimiento de maquinaria, el estado del inventario, y otros aspectos importantes para la toma de decisiones.
 
-1. Funcionalidades Implementadas:
+## 1. Funcionalidades Implementadas:
 Rendimiento Promedio por Hectárea 📊🌾
 Permite calcular el rendimiento promedio de un cultivo específico en relación con la cantidad de hectáreas plantadas, facilitando el análisis de la productividad por área de cultivo.
 
-2. Costo Operativo Total en un Período 💰📅
+## 2. Costo Operativo Total en un Período 💰📅
 Permite calcular el costo total de los costos operativos registrados entre dos fechas, lo que ayuda a controlar los gastos de operación de la finca en un intervalo de tiempo específico.
 
-3. Porcentaje de Maquinaria en Mantenimiento 🛠️🚜
+## 3. Porcentaje de Maquinaria en Mantenimiento 🛠️🚜
 Proporciona el porcentaje de la maquinaria que se encuentra en mantenimiento, lo cual es crucial para la planificación de la producción y el uso eficiente de los recursos.
 
-4. Ingreso Total de Ventas por Cliente 💸🛍️
+## 4. Ingreso Total de Ventas por Cliente 💸🛍️
 Permite calcular el total de ingresos obtenidos por cada cliente, considerando el monto de ventas y los productos adquiridos.
 
-5. Salario Promedio por Tipo de Empleado 💼💵
+## 5. Salario Promedio por Tipo de Empleado 💼💵
 Calcula el salario promedio de los empleados según su tipo de puesto (por ejemplo, gerentes, trabajadores, etc.), lo que ayuda a gestionar la remuneración de manera más eficiente.
 
-6. Productos No Disponibles en Inventario 📦❌
+## 6. Productos No Disponibles en Inventario 📦❌
 Calcula la cantidad de productos que están actualmente fuera de inventario, lo cual permite gestionar mejor las compras y evitar la escasez de productos.
 
-7. Rotación de Inventario de un Producto 🔄📦
+## 7. Rotación de Inventario de un Producto 🔄📦
 Mide la rotación del inventario de un producto específico, ayudando a gestionar las existencias y prever la reposición de productos.
 
-8. Cantidad de Tareas Completadas ✔️📝
+## 8. Cantidad de Tareas Completadas ✔️📝
 Permite conocer cuántas tareas han sido completadas en la finca, lo que ayuda a hacer un seguimiento del progreso de las operaciones y tareas agrícolas.
 
-9. Costo Total de Producción por Cultivo 💰🌱
+## 9. Costo Total de Producción por Cultivo 💰🌱
 Calcula el costo total de producción de un cultivo específico, ayudando a determinar la rentabilidad de los cultivos y la asignación eficiente de recursos.
 
-10. Cantidad de Hectáreas Asignadas por Zona 🌍📏
+## 10. Cantidad de Hectáreas Asignadas por Zona 🌍📏
 Permite calcular el total de hectáreas asignadas a cada zona específica de la finca, lo cual es útil para la planificación de cultivos y gestión territorial.
 
-11. Costo Promedio de Mantenimiento por Maquinaria 💵🔧
+## 11. Costo Promedio de Mantenimiento por Maquinaria 💵🔧
 Calcula el costo promedio de mantenimiento de la maquinaria, lo que permite gestionar mejor los recursos y planificar el mantenimiento de manera eficiente.
 
-12. Total de Ventas de un Producto Específico 🛒📊
+## 12. Total de Ventas de un Producto Específico 🛒📊
 Permite conocer el total de ventas de un producto específico, lo que ayuda a analizar la demanda de productos y ajustar la producción o compras.
 
-13. Tiempo Promedio de Respuesta en Tareas ⏱️📈
+## 13. Tiempo Promedio de Respuesta en Tareas ⏱️📈
 Calcula el tiempo promedio de respuesta entre la fecha de inicio y fin de las tareas completadas, permitiendo analizar la eficiencia operativa.
 
-14. Cantidad Total de Maquinaria en Uso 🚜🔧
+## 14. Cantidad Total de Maquinaria en Uso 🚜🔧
 Permite calcular cuántas unidades de maquinaria están actualmente en uso, lo que ayuda a gestionar la disponibilidad de maquinaria y planificar su uso.
 
-15. Número Total de Clientes 🧑‍🤝‍🧑📊
+## 15. Número Total de Clientes 🧑‍🤝‍🧑📊
 Calcula el total de clientes registrados, proporcionando una visión general del alcance de la finca o empresa.
 
-16. Número Total de Tareas Pendientes 🕒📝
+## 16. Número Total de Tareas Pendientes 🕒📝
 Permite conocer cuántas tareas pendientes están en espera de ser completadas, lo cual es útil para la planificación operativa.
 
-17. Porcentaje de Empleados Activos 👩‍🌾👨‍🌾
+## 17. Porcentaje de Empleados Activos 👩‍🌾👨‍🌾
 Permite conocer el porcentaje de empleados activos dentro de la finca, lo que ayuda a gestionar la plantilla laboral.
 
-18. Total de Ventas de un Cliente Específico 💳🛒
+## 18. Total de Ventas de un Cliente Específico 💳🛒
 Calcula el total de ventas realizadas a un cliente específico, ayudando a realizar análisis de comportamiento y preferencia del cliente.
 
-19. Promedio de Ventas por Producto 💰📦
+## 19. Promedio de Ventas por Producto 💰📦
 Permite calcular el promedio de ventas de un producto, lo que ayuda a realizar predicciones sobre la demanda futura.
 
-20. Inventario Total de un Producto 📦🔢
+## 20. Inventario Total de un Producto 📦🔢
 Calcula el inventario total disponible de un producto, ayudando a gestionar mejor las existencias y evitar escasez.
 
 
-## TRIGGERS
+## **TRIGGERS**
 Funcionalidades Implementadas
 Rendimiento de los Cultivos:
 
-1. Calcular el rendimiento promedio por hectárea de cada cultivo, permitiendo a los usuarios obtener un análisis del desempeño de las cosechas.
+## 1. Calcular el rendimiento promedio por hectárea de cada cultivo, permitiendo a los usuarios obtener un análisis del desempeño de las cosechas.
 Costos Operativos:
 
-2. Estimar el costo operativo total de la finca en un período específico, facilitando la gestión financiera y la toma de decisiones.
+## 2. Estimar el costo operativo total de la finca en un período específico, facilitando la gestión financiera y la toma de decisiones.
 Ventas:
 
-3. Calcular el total de ventas realizadas a cada cliente, brindando una visión clara de la facturación y la relación con los clientes.
+## 3. Calcular el total de ventas realizadas a cada cliente, brindando una visión clara de la facturación y la relación con los clientes.
 Compras:
 
-4. Calcular el total de compras realizadas a cada proveedor, ayudando a controlar los gastos en insumos y materiales.
+## 4. Calcular el total de compras realizadas a cada proveedor, ayudando a controlar los gastos en insumos y materiales.
 Salarios y Pagos:
 
-5. Obtener el salario promedio de los empleados y calcular el total de pagos realizados a los empleados y proveedores en un período determinado.
+## 5. Obtener el salario promedio de los empleados y calcular el total de pagos realizados a los empleados y proveedores en un período determinado.
 Inventario:
 
-6. Calcular el total de inventario de un producto, lo que facilita el control de existencias y las decisiones de reabastecimiento.
+## 6. Calcular el total de inventario de un producto, lo que facilita el control de existencias y las decisiones de reabastecimiento.
 Mantenimiento de Maquinaria:
 
-7. Calcular el costo total de mantenimiento de la maquinaria, y obtener el total de tareas de mantenimiento programadas y pendientes.
+## 7. Calcular el costo total de mantenimiento de la maquinaria, y obtener el total de tareas de mantenimiento programadas y pendientes.
 Evaluaciones de Desempeño:
 
-8. Calcular el promedio de puntuaciones de evaluación de desempeño de los empleados, ayudando a gestionar el rendimiento del personal.
+## 8. Calcular el promedio de puntuaciones de evaluación de desempeño de los empleados, ayudando a gestionar el rendimiento del personal.
 Control de Calidad:
 
-9. Obtener el porcentaje de calidad de un producto basado en las aprobaciones de las inspecciones de calidad.
+## 9. Obtener el porcentaje de calidad de un producto basado en las aprobaciones de las inspecciones de calidad.
 Cosechas:
 
-10. Calcular el total de cosechas realizadas de un cultivo, facilitando el seguimiento del ciclo de producción.
+## 10. Calcular el total de cosechas realizadas de un cultivo, facilitando el seguimiento del ciclo de producción.
 Tareas:
 
-11. Contar el número de tareas pendientes, permitiendo una gestión eficiente de las tareas por realizar.
+## 11. Contar el número de tareas pendientes, permitiendo una gestión eficiente de las tareas por realizar.
 Ingreso y Producción:
 
-12. Obtener el total de ingresos por ventas en un período y calcular el costo total de producción de un cultivo.
+## 12. Obtener el total de ingresos por ventas en un período y calcular el costo total de producción de un cultivo.
 
-### Descripción Técnica
+### **Descripción Técnica**
 Las funcionalidades de este sistema se implementan a través de funciones almacenadas (funciones SQL) que permiten realizar cálculos como el rendimiento de cultivos, costos operativos, ventas, compras, salarios, entre otros. Estas funciones permiten consultar y procesar la información almacenada en las bases de datos de forma eficiente.
 
 Cada función está diseñada para manejar distintos aspectos de la finca, lo que facilita la toma de decisiones y la planificación agrícola.
