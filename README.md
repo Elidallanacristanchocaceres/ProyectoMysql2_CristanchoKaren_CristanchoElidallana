@@ -424,7 +424,7 @@ Permite calcular el promedio de ventas de un producto, lo que ayuda a realizar p
 Calcula el inventario total disponible de un producto, ayudando a gestionar mejor las existencias y evitar escasez.
 
 
-## **TRIGGERS**
+## TRIGGERS
 Funcionalidades Implementadas
 Rendimiento de los Cultivos:
 
