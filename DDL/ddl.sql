@@ -192,6 +192,10 @@ CREATE TABLE Asignacion_Maquinaria (
   fecha_fin DATE,
 
   estado VARCHAR(20),
+    
+  empleado_id INT,
+    
+  FOREIGN KEY (empleado_id) REFERENCES Empleados(empleado_id),
 
   FOREIGN KEY (maquinaria_id) REFERENCES Maquinaria(maquinaria_id),
 
