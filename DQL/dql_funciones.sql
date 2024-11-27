@@ -1,4 +1,4 @@
-1. Calcular el rendimiento promedio por hectárea de un cultivo
+--1. Calcular el rendimiento promedio por hectárea de un cultivo
 DELIMITER //
 CREATE FUNCTION RendimientoPromedioPorHectarea(cultivoID INT) RETURNS DECIMAL(10,2)
 DETERMINISTIC
@@ -16,7 +16,7 @@ DELIMITER ;
 SELECT RendimientoPromedioPorHectarea(1);
 
 
-2. Calcular el costo operativo total en un período
+--2. Calcular el costo operativo total en un período
 DELIMITER //
 CREATE FUNCTION CostoOperativoTotal(inicio DATE, fin DATE) RETURNS DECIMAL(10,2)
 DETERMINISTIC
@@ -34,7 +34,7 @@ DELIMITER ;
 SELECT CostoOperativoTotal('2024-01-01', '2024-12-31');
 
 
-3. Obtener el porcentaje de maquinaria en mantenimiento actualmente
+--3. Obtener el porcentaje de maquinaria en mantenimiento actualmente
 DELIMITER //
 CREATE FUNCTION PorcentajeMaquinariaEnMantenimiento() RETURNS DECIMAL(5,2)
 DETERMINISTIC
@@ -59,7 +59,7 @@ DELIMITER ;
 SELECT PorcentajeMaquinariaEnMantenimiento();
 
 
-4. Calcular el ingreso total de ventas por cliente
+--4. Calcular el ingreso total de ventas por cliente
 DELIMITER //
 CREATE FUNCTION IngresoTotalPorCliente(clienteID INT) RETURNS DECIMAL(10,2)
 DETERMINISTIC
@@ -77,7 +77,7 @@ DELIMITER ;
 SELECT IngresoTotalPorCliente(1);
 
 
-5. Calcular el salario promedio por tipo de empleado
+--5. Calcular el salario promedio por tipo de empleado
  DELIMITER //
    CREATE FUNCTION SalarioPromedioPorTipo(tipo VARCHAR(50)) RETURNS DECIMAL(10,2)
    DETERMINISTIC
@@ -92,10 +92,10 @@ SELECT IngresoTotalPorCliente(1);
    //
    DELIMITER ;
 
-SELECT SalarioPromedioPorTipo('Administrador');
+SELECT SalarioPromedioPorTipo('Gerente');
 
 
-6. Calcular la cantidad de productos no disponibles en inventario
+--6. Calcular la cantidad de productos no disponibles en inventario
  DELIMITER //
    CREATE FUNCTION ProductosSinInventario() RETURNS INT
    DETERMINISTIC
@@ -113,7 +113,7 @@ SELECT SalarioPromedioPorTipo('Administrador');
 SELECT ProductosSinInventario();
 
 
-7. Calcular la rotación de inventario de un producto
+--7. Calcular la rotación de inventario de un producto
  DELIMITER //
    CREATE FUNCTION RotacionDeInventario(productoID INT) RETURNS DECIMAL(10,2)
    DETERMINISTIC
@@ -131,7 +131,7 @@ SELECT ProductosSinInventario();
 SELECT RotacionDeInventario(1);
 
 
-8. Calcular la cantidad total de tareas completadas
+--8. Calcular la cantidad total de tareas completadas
  DELIMITER //
    CREATE FUNCTION TareasCompletadas() RETURNS INT
    DETERMINISTIC
@@ -140,7 +140,7 @@ SELECT RotacionDeInventario(1);
     SELECT COUNT(*) 
     INTO cantidad 
     FROM Tareas 
-    WHERE estado = 'Completada';
+    WHERE estado = 'Completado';
     RETURN cantidad;
    END;
    //
@@ -149,7 +149,7 @@ SELECT RotacionDeInventario(1);
 SELECT TareasCompletadas();
 
 
-9. Calcular el costo total de producción por cultivo
+--9. Calcular el costo total de producción por cultivo
  DELIMITER //
    CREATE FUNCTION CostoTotalProduccion(cultivoID INT) RETURNS DECIMAL(10,2)
    DETERMINISTIC
@@ -167,7 +167,7 @@ SELECT TareasCompletadas();
 SELECT CostoTotalProduccion(1);
 
 
-10. Calcular la cantidad de hectáreas asignadas por zona
+--10. Calcular la cantidad de hectáreas asignadas por zona
  DELIMITER //
     CREATE FUNCTION HectareasPorZona(zonaNombre VARCHAR(100)) RETURNS INT
     DETERMINISTIC
@@ -185,7 +185,7 @@ SELECT CostoTotalProduccion(1);
 SELECT HectareasPorZona('Zona Norte');
 
 
-11. Estimar el costo promedio de mantenimiento por maquinaria
+--11. Estimar el costo promedio de mantenimiento por maquinaria
     DELIMITER //
     CREATE FUNCTION CostoPromedioMantenimiento(maquinariaID INT) RETURNS DECIMAL(10,2)
     DETERMINISTIC
@@ -203,7 +203,7 @@ SELECT HectareasPorZona('Zona Norte');
     SELECT CostoPromedioMantenimiento(1);
      
 
-12. Calcular el total de ventas de un producto específico
+--12. Calcular el total de ventas de un producto específico
      DELIMITER //
         CREATE FUNCTION TotalVentasProducto(productoID INT) RETURNS DECIMAL(10,2)
         DETERMINISTIC
@@ -221,7 +221,7 @@ SELECT HectareasPorZona('Zona Norte');
     SELECT TotalVentasProducto(1);
     
 
-13.  Calcular el tiempo promedio de respuesta en tareas
+--13.  Calcular el tiempo promedio de respuesta en tareas
 DELIMITER //
 CREATE FUNCTION TiempoPromedioTareas() RETURNS DECIMAL(10,2)
 DETERMINISTIC
@@ -242,7 +242,7 @@ DELIMITER ;
 SELECT TiempoPromedioTareas();
     
 
-14. Calcular la cantidad total de maquinaria en uso
+--14. Calcular la cantidad total de maquinaria en uso
 DELIMITER //
 CREATE FUNCTION MaquinariaEnUso() RETURNS INT
 DETERMINISTIC
@@ -260,7 +260,7 @@ DELIMITER ;
 SELECT MaquinariaEnUso();
 
 
-15. Obtener el número total de clientes
+--15. Obtener el número total de clientes
 DELIMITER //
 CREATE FUNCTION TotalClientes() RETURNS INT
 DETERMINISTIC
@@ -277,7 +277,7 @@ DELIMITER ;
 SELECT TotalClientes();
 
 
-16. Calcular el número total de tareas pendientes
+--16. Calcular el número total de tareas pendientes
 DELIMITER //
 CREATE FUNCTION TareasPendientes() RETURNS INT
 DETERMINISTIC
@@ -295,7 +295,7 @@ DELIMITER ;
 SELECT TareasPendientes();
 
 
-17. Calcular el porcentaje de empleados activos
+--17. Calcular el porcentaje de empleados activos
 DELIMITER //
 CREATE FUNCTION PorcentajeEmpleadosActivos() RETURNS DECIMAL(5,2)
 DETERMINISTIC
@@ -320,7 +320,7 @@ DELIMITER ;
 SELECT PorcentajeEmpleadosActivos();
 
 
-18. **Función para obtener el total de ventas de un cliente específico**
+--18. **Función para obtener el total de ventas de un cliente específico**
 DELIMITER //
 CREATE FUNCTION TotalVentasPorCliente(clienteID INT) RETURNS DECIMAL(10,2)
 DETERMINISTIC
@@ -338,7 +338,7 @@ DELIMITER ;
 SELECT TotalVentasPorCliente(1); 
 
 
-19. **Función para obtener el promedio de ventas por producto**
+--19. **Función para obtener el promedio de ventas por producto**
 DELIMITER //
 CREATE FUNCTION PromedioVentasPorProducto(productoID INT) RETURNS DECIMAL(10,2)
 DETERMINISTIC
@@ -354,7 +354,7 @@ END;
 DELIMITER ;
 SELECT PromedioVentasPorProducto(1);
 
-20. **Función para calcular el inventario total de un producto**
+--20. **Función para calcular el inventario total de un producto**
 DELIMITER //
 CREATE FUNCTION InventarioTotalProducto(productoID INT) RETURNS INT
 DETERMINISTIC
