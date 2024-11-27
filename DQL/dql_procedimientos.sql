@@ -1,363 +1,446 @@
-1. Registrar un nuevo empleado
+1. **RegistrarNuevaVenta**
+
 DELIMITER $$
-CREATE PROCEDURE sp_registrar_empleado(
+
+CREATE PROCEDURE RegistrarNuevaVenta(
+    IN p_producto_id INT,
+    IN p_cliente_id INT,
+    IN p_cantidad INT,
+    IN p_precio_unitario DECIMAL(10,2),
+    IN p_fecha_venta DATE
+)
+BEGIN
+    DECLARE p_cantidad_actual INT;
+
+    SELECT cantidad INTO p_cantidad_actual
+    FROM Inventarios
+    WHERE producto_id = p_producto_id;
+
+    IF p_cantidad_actual IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El producto no existe en el inventario';
+    ELSEIF p_cantidad_actual < p_cantidad THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No hay suficiente cantidad en inventario';
+    ELSE
+        INSERT INTO Ventas (producto_id, cantidad, precio_unitario, fecha_venta, cliente_id)
+        VALUES (p_producto_id, p_cantidad, p_precio_unitario, p_fecha_venta, p_cliente_id);
+
+        UPDATE Inventarios
+        SET cantidad = cantidad - p_cantidad, fecha_actualizacion = p_fecha_venta
+        WHERE producto_id = p_producto_id;
+    END IF;
+END$$
+
+DELIMITER ;
+
+CALL RegistrarNuevaVenta(1, 30, 3, 19.70, '2024-03-06');
+
+2. **RegistrarNuevoProveedor**
+
+DELIMITER $$
+
+CREATE PROCEDURE RegistrarNuevoProveedor(
     IN p_nombre VARCHAR(100),
-    IN p_apellido VARCHAR(100),
+    IN p_direccion VARCHAR(200),
     IN p_telefono VARCHAR(15),
-    IN p_direccion VARCHAR(150),
-    IN p_puesto VARCHAR(100),
-    IN p_salario DECIMAL(10, 2)
+    IN p_email VARCHAR(100)
 )
 BEGIN
-    INSERT INTO Empleados (nombre, apellido, telefono, direccion, puesto, salario)
-    VALUES (p_nombre, p_apellido, p_telefono, p_direccion, p_puesto, p_salario);
-END $$
+
+    INSERT INTO Proveedores (nombre, direccion, telefono, email)
+    VALUES (p_nombre, p_direccion, p_telefono, p_email);
+END$$
 
 DELIMITER ;
 
-CALL sp_registrar_empleado('Juan', 'Perez', '123456789', 'Calle Finca 123', 'Agricultor', 1500.00);
+CALL RegistrarNuevoProveedor('Lucia', 'Calle Ficticia 123', '555-1234', 'lucia@email.com');
 
 
-2. Registrar un nuevo proveedor
+3. **RegistrarNuevoEmpleado**
 DELIMITER $$
-CREATE PROCEDURE sp_registrar_proveedor(
+
+CREATE PROCEDURE RegistrarNuevoEmpleado(
     IN p_nombre VARCHAR(100),
-    IN p_telefono VARCHAR(15),
-    IN p_correo VARCHAR(100),
-    IN p_direccion VARCHAR(150)
+    IN p_tipo_empleado VARCHAR(50),
+    IN p_salario DECIMAL(10,2),
+    IN p_fecha_ingreso DATE,
+    IN p_estado VARCHAR(20)
 )
 BEGIN
-    INSERT INTO Proveedores (nombre, telefono, correo, direccion)
-    VALUES (p_nombre, p_telefono, p_correo, p_direccion);
-END $$
 
+    INSERT INTO Empleados (nombre, tipo_empleado, salario, fecha_ingreso, estado)
+    VALUES (p_nombre, p_tipo_empleado, p_salario, p_fecha_ingreso, p_estado);
+END$$
 DELIMITER ;
 
-CALL sp_registrar_proveedor('Lucia', '987654321', 'lucia@gmail.com', 'Calle Proveedor 456');
+CALL RegistrarNuevoEmpleado('Juan Pérez', 'Operador', 1200.00, '2024-11-01', 'Activo');
 
 
-3. Registrar una nueva maquinaria
+4. **ActualizarEstadoMaquinaria**
 DELIMITER $$
-CREATE PROCEDURE sp_registrar_maquinaria(
-    IN p_tipo VARCHAR(100),
-    IN p_descripcion TEXT,
-    IN p_estado VARCHAR(50),
-    IN p_fecha_adquisicion DATE
+
+CREATE PROCEDURE ActualizarEstadoMaquinaria(
+    IN p_maquinaria_id INT,
+    IN p_estado VARCHAR(20)
 )
 BEGIN
-    INSERT INTO Maquinaria (tipo, descripcion, estado, fecha_adquisicion)
-    VALUES (p_tipo, p_descripcion, p_estado, p_fecha_adquisicion);
-END $$
 
-DELIMITER ;
-
-CALL sp_registrar_maquinaria('Tractor', 'Tractor de 100 hp', 'Operativo', '2024-01-15');
-
-
-4. Actualizar el estado de una maquinaria
-DELIMITER $$
-CREATE PROCEDURE sp_actualizar_estado_maquinaria(
-    IN p_id_maquinaria INT,
-    IN p_estado VARCHAR(50)
-)
-BEGIN
     UPDATE Maquinaria
     SET estado = p_estado
-    WHERE id_maquinaria = p_id_maquinaria;
-END $$
+    WHERE maquinaria_id = p_maquinaria_id;
+END$$
 
 DELIMITER ;
 
-CALL sp_actualizar_estado_maquinaria(1, 'En mantenimiento');
+CALL ActualizarEstadoMaquinaria(1, 'En mantenimiento');
 
 
-5. Registrar un mantenimiento de maquinaria
+5. **RegistrarMantenimientoMaquinaria**
 DELIMITER $$
-CREATE PROCEDURE sp_registrar_mantenimiento(
-    IN p_id_maquinaria INT,
-    IN p_id_empleado INT,
-    IN p_fecha DATE,
-    IN p_descripcion TEXT,
-    IN p_costo DECIMAL(10, 2)
+
+CREATE PROCEDURE RegistrarMantenimientoMaquinaria(
+    IN p_maquinaria_id INT,
+    IN p_fecha_mantenimiento DATE,
+    IN p_tipo_mantenimiento VARCHAR(50),
+    IN p_costo DECIMAL(10,2),
+    IN p_descripcion TEXT
 )
 BEGIN
-    INSERT INTO Mantenimiento (id_maquinaria, id_empleado, fecha, descripcion, costo)
-    VALUES (p_id_maquinaria, p_id_empleado, p_fecha, p_descripcion, p_costo);
-END $$
 
-DELIMITER ;
-
-CALL sp_registrar_mantenimiento(1, 1, '2024-11-24', 'Cambio de aceite y revisión general', 300.00);
-
-
-6. Registrar una venta y actualizar inventarios
-DELIMITER $$
-CREATE PROCEDURE sp_procesar_venta(
-    IN p_id_cliente INT,
-    IN p_id_empleado INT,
-    IN p_fecha DATE,
-    IN p_id_producto INT,
-    IN p_cantidad DECIMAL(10, 2),
-    IN p_precio_unitario DECIMAL(10, 2)
-)
-BEGIN
-    DECLARE total DECIMAL(10, 2);
-    INSERT INTO Ventas (id_cliente, id_empleado, fecha, total) VALUES (p_id_cliente, p_id_empleado, p_fecha, 0);
-    SET @id_venta = LAST_INSERT_ID();
-
-    INSERT INTO DetalleVentas (id_venta, id_producto, cantidad, precio_unitario)
-    VALUES (@id_venta, p_id_producto, p_cantidad, p_precio_unitario);
-
-    UPDATE Inventario SET cantidad = cantidad - p_cantidad WHERE id_producto = p_id_producto;
-    SET total = p_cantidad * p_precio_unitario;
-    UPDATE Ventas SET total = total WHERE id_venta = @id_venta;
-END $$
-DELIMITER ;
-
-CALL sp_procesar_venta(1, 1, '2024-11-24', 1, 10, 25.00);
-
-
-7. Registrar una compra
-DELIMITER $$
-CREATE PROCEDURE sp_registrar_compra(
-    IN p_id_proveedor INT,
-    IN p_id_empleado INT,
-    IN p_fecha DATE,
-    IN p_id_producto INT,
-    IN p_cantidad DECIMAL(10, 2),
-    IN p_precio_unitario DECIMAL(10, 2)
-)
-BEGIN
-    DECLARE total DECIMAL(10, 2);
-    INSERT INTO Compras (id_proveedor, id_empleado, fecha, total) VALUES (p_id_proveedor, p_id_empleado, p_fecha, 0);
-    SET @id_compra = LAST_INSERT_ID();
-
-    INSERT INTO DetalleCompras (id_compra, id_producto, cantidad, precio_unitario)
-    VALUES (@id_compra, p_id_producto, p_cantidad, p_precio_unitario);
+    INSERT INTO Mantenimiento_Maquinaria (maquinaria_id, fecha_mantenimiento, tipo_mantenimiento, costo, descripcion)
+    VALUES (p_maquinaria_id, p_fecha_mantenimiento, p_tipo_mantenimiento, p_costo, p_descripcion);
     
-    UPDATE Inventario SET cantidad = cantidad + p_cantidad WHERE id_producto = p_id_producto;
-    SET total = p_cantidad * p_precio_unitario;
-    UPDATE Compras SET total = total WHERE id_compra = @id_compra;
-END $$
+    UPDATE Maquinaria
+    SET estado = 'En mantenimiento'
+    WHERE maquinaria_id = p_maquinaria_id;
+END$$
 
 DELIMITER ;
 
-CALL sp_registrar_compra(1, 1, '2024-11-24', 1, 20, 15.00);
+CALL RegistrarMantenimientoMaquinaria(1, '2024-11-25', 'Revisión general', 200.00, 'Cambio de aceite y revisión de partes');
 
 
-8. Registrar una producción de productos
+6. **ActualizarInventario**
 DELIMITER $$
-CREATE PROCEDURE sp_registrar_produccion(
-    IN p_id_producto INT,
-    IN p_fecha DATE,
-    IN p_cantidad DECIMAL(10, 2)
+
+CREATE PROCEDURE ActualizarInventario(
+    IN p_producto_id INT,
+    IN p_cantidad INT,
+    IN p_fecha_actualizacion DATE
 )
 BEGIN
-    INSERT INTO Produccion (id_producto, fecha, cantidad)
-    VALUES (p_id_producto, p_fecha, p_cantidad);
-END $$
+
+    UPDATE Inventarios
+    SET cantidad = cantidad + p_cantidad, fecha_actualizacion = p_fecha_actualizacion
+    WHERE producto_id = p_producto_id;
+
+    IF ROW_COUNT() = 0 THEN
+        INSERT INTO Inventarios (producto_id, cantidad, fecha_actualizacion)
+        VALUES (p_producto_id, p_cantidad, p_fecha_actualizacion);
+    END IF;
+END$$
 
 DELIMITER ;
 
-CALL sp_registrar_produccion(1, '2024-11-24', 100.00);
+CALL ActualizarInventario(1, 50, '2024-11-26');
 
 
-9. Actualizar inventario después de una producción
+7. **RegistrarNuevaCompra**
 DELIMITER $$
-CREATE PROCEDURE sp_actualizar_inventario_produccion(
-    IN p_id_producto INT,
-    IN p_cantidad DECIMAL(10, 2)
+
+CREATE PROCEDURE RegistrarNuevaCompra(
+    IN p_producto_id INT,
+    IN p_proveedor_id INT,
+    IN p_cantidad INT,
+    IN p_precio_unitario DECIMAL(10,2),
+    IN p_fecha_compra DATE
 )
 BEGIN
-    UPDATE Inventario
-    SET cantidad = cantidad + p_cantidad
-    WHERE id_producto = p_id_producto;
-END $$
+
+    INSERT INTO Compras (producto_id, cantidad, precio_unitario, fecha_compra, proveedor_id)
+    VALUES (p_producto_id, p_cantidad, p_precio_unitario, p_fecha_compra, p_proveedor_id);
+    
+
+    CALL ActualizarInventario(p_producto_id, p_cantidad, p_fecha_compra);
+END$$
 
 DELIMITER ;
 
-CALL sp_actualizar_inventario_produccion(1, 100.00);
+CALL RegistrarNuevaCompra(1, 1, 100, 45.00, '2024-11-25');
 
 
-10. Actualizar inventario después de una venta
+8. **ActualizarEstadoTarea**
 DELIMITER $$
-CREATE PROCEDURE sp_actualizar_inventario_venta(
-    IN p_id_producto INT,
-    IN p_cantidad DECIMAL(10, 2)
+
+CREATE PROCEDURE ActualizarEstadoTarea(
+    IN p_tarea_id INT,
+    IN p_estado VARCHAR(20)
 )
 BEGIN
-    UPDATE Inventario
-    SET cantidad = cantidad - p_cantidad
-    WHERE id_producto = p_id_producto;
-END $$
 
-DELIMITER ;
-
-CALL sp_actualizar_inventario_venta(1, 10.00);
-
-
-11. Obtener el total de ventas de un cliente
-DELIMITER $$
-CREATE PROCEDURE sp_total_ventas_cliente(
-    IN p_id_cliente INT
-)
-BEGIN
-    SELECT SUM(total) AS total_ventas
-    FROM Ventas
-    WHERE id_cliente = p_id_cliente;
-END $$
-
-DELIMITER ;
-
-CALL sp_total_ventas_cliente(1);
-
-
-12. Obtener el total de compras de un proveedor
-DELIMITER $$
-CREATE PROCEDURE sp_total_compras_proveedor(
-    IN p_id_proveedor INT
-)
-BEGIN
-    SELECT SUM(total) AS total_compras
-    FROM Compras
-    WHERE id_proveedor = p_id_proveedor;
-END $$
-
-DELIMITER ;
-
-CALL sp_total_compras_proveedor(1);
-
-
-13. Obtener inventario por producto
-DELIMITER $$
-CREATE PROCEDURE sp_inventario_por_producto(
-    IN p_id_producto INT
-)
-BEGIN
-    SELECT p.nombre, i.cantidad
-    FROM Inventario i
-    JOIN Productos p ON i.id_producto = p.id_producto
-    WHERE i.id_producto = p_id_producto;
-END $$
-
-DELIMITER ;
-
-CALL sp_inventario_por_producto(1);
-
-
-14. Asignar tarea a un empleado
-DELIMITER $$
-CREATE PROCEDURE sp_asignar_tarea(
-    IN p_id_empleado INT,
-    IN p_descripcion TEXT,
-    IN p_fecha_asignacion DATE,
-    IN p_fecha_limite DATE,
-    IN p_estado VARCHAR(50)
-)
-BEGIN
-    INSERT INTO AsignacionTareas (id_empleado, descripcion, fecha_asignacion, fecha_limite, estado)
-    VALUES (p_id_empleado, p_descripcion, p_fecha_asignacion, p_fecha_limite, p_estado);
-END $$
-
-DELIMITER ;
-CALL sp_asignar_tarea(1, 'Revisión de maquinaria', '2024-11-24', '2024-12-01', 'Pendiente');
-
-
-15. Actualizar estado de una tarea
-DELIMITER $$
-CREATE PROCEDURE sp_actualizar_estado_tarea(
-    IN p_id_tarea INT,
-    IN p_estado VARCHAR(50)
-)
-BEGIN
-    UPDATE AsignacionTareas
+    UPDATE Tareas
     SET estado = p_estado
-    WHERE id_tarea = p_id_tarea;
+    WHERE tarea_id = p_tarea_id;
+END$$
+
+DELIMITER ;
+
+CALL ActualizarEstadoTarea(1, 'Completado');
+
+
+9. **RegistrarNuevaTarea**
+DELIMITER $$
+
+CREATE PROCEDURE RegistrarNuevaTarea(
+    IN p_descripcion TEXT,
+    IN p_fecha_inicio DATE,
+    IN p_fecha_fin DATE,
+    IN p_estado VARCHAR(20)
+)
+BEGIN
+
+    INSERT INTO Tareas (descripcion, fecha_inicio, fecha_fin, estado)
+    VALUES (p_descripcion, p_fecha_inicio, p_fecha_fin, p_estado);
+END$$
+
+DELIMITER ;
+
+CALL RegistrarNuevaTarea('Revisión de maquinaria', '2024-11-25', '2024-11-30', 'Pendiente');
+
+
+10. **RegistrarHistorialCambioEmpleado**
+DELIMITER $$
+
+CREATE PROCEDURE RegistrarHistorialCambioEmpleado(
+    IN p_empleado_id INT,
+    IN p_tipo_cambio VARCHAR(50),
+    IN p_valor_anterior DECIMAL(10,2),
+    IN p_valor_nuevo DECIMAL(10,2),
+    IN p_fecha_cambio DATE
+)
+BEGIN
+
+    INSERT INTO Historial_Empleados (empleado_id, tipo_cambio, valor_anterior, valor_nuevo, fecha_cambio)
+    VALUES (p_empleado_id, p_tipo_cambio, p_valor_anterior, p_valor_nuevo, p_fecha_cambio);
+END$$
+
+DELIMITER ;
+
+CALL RegistrarHistorialCambioEmpleado(1, 'Salario', 1200.00, 1300.00, '2024-11-26');
+
+
+11. **RegistrarHistorialCambioInventario**
+DELIMITER $$
+
+CREATE PROCEDURE RegistrarHistorialCambioInventario(
+    IN p_inventario_id INT,
+    IN p_tipo_cambio VARCHAR(50),
+    IN p_cantidad_anterior INT,
+    IN p_cantidad_nueva INT,
+    IN p_fecha_cambio DATE
+)
+BEGIN
+
+    INSERT INTO Historial_Inventarios (inventario_id, tipo_cambio, cantidad_anterior, cantidad_nueva, fecha_cambio)
+    VALUES (p_inventario_id, p_tipo_cambio, p_cantidad_anterior, p_cantidad_nueva, p_fecha_cambio);
+END$$
+
+DELIMITER ;
+
+CALL RegistrarHistorialCambioInventario(1, 'Ajuste por error', 50, 60, '2024-11-26');
+
+
+12. **ActualizarEstadoCultivo**
+DELIMITER $$
+
+CREATE PROCEDURE ActualizarRendimientoCultivo(
+    IN p_cultivo_id INT,
+    IN p_nuevo_rendimiento DECIMAL(10, 2)
+)
+BEGIN
+    UPDATE Cultivos
+    SET rendimiento_promedio = p_nuevo_rendimiento
+    WHERE cultivo_id = p_cultivo_id;
+END$$
+
+DELIMITER ;
+
+CALL ActualizarRendimientoCultivo(1, 9.00);
+
+
+13. **RegistrarControlCalidad**
+DELIMITER $$
+
+CREATE PROCEDURE RegistrarControlCalidad(
+    IN p_producto_id INT,
+    IN p_fecha_revision DATE,
+    IN p_resultado VARCHAR(50),
+    IN p_observaciones TEXT
+)
+BEGIN
+    INSERT INTO Control_Calidad (producto_id, fecha_revision, resultado, observaciones)
+    VALUES (p_producto_id, p_fecha_revision, p_resultado, p_observaciones);
+END$$
+
+DELIMITER ;
+
+CALL RegistrarControlCalidad(1, '2024-11-25', 'Aprobado', 'El producto cumple con los estándares de calidad');
+
+
+14. **RegistrarCosecha**
+DELIMITER $$
+
+CREATE PROCEDURE RegistrarCosecha(
+    IN p_cultivo_id INT,
+    IN p_cantidad DECIMAL(10,2),
+    IN p_fecha_cosecha DATE,
+    IN p_calidad_control VARCHAR(50),
+    IN p_destino VARCHAR(100)
+)
+BEGIN
+    IF p_calidad_control IS NULL THEN
+        SET p_calidad_control = 'Sin control';
+    END IF;
+
+    INSERT INTO Cosecha (cultivo_id, cantidad_recolectada, fecha_cosecha, calidad_control, destino)
+    VALUES (p_cultivo_id, p_cantidad, p_fecha_cosecha, p_calidad_control, p_destino);
+END$$
+
+DELIMITER ;
+
+CALL RegistrarCosecha(1, 100, '2024-11-26', NULL, 'Mercado Local');
+
+
+15. **ActualizarFechaProducto**
+DELIMITER $$
+
+CREATE PROCEDURE ActualizarFechaActualizacionProducto(
+    IN p_producto_id INT,
+    IN p_nueva_fecha_actualizacion DATE
+)
+BEGIN
+    UPDATE Inventarios
+    SET fecha_actualizacion = p_nueva_fecha_actualizacion
+    WHERE producto_id = p_producto_id;
+END$$
+
+DELIMITER ;
+
+CALL ActualizarFechaActualizacionProducto(1, '2025-11-26');
+
+
+16. **RegistrarPagoProveedor**
+DELIMITER $$
+
+CREATE PROCEDURE RegistrarPagoProveedor(
+    IN p_proveedor_id INT,
+    IN p_monto DECIMAL(10,2),
+    IN p_fecha_pago DATE
+)
+BEGIN
+
+    INSERT INTO Pagos_Proveedores (proveedor_id, monto, fecha_pago)
+    VALUES (p_proveedor_id, p_monto, p_fecha_pago);
+END$$
+
+DELIMITER ;
+
+CALL RegistrarPagoProveedor(1, 500.00, '2024-11-26');
+
+
+### 17. **RegistrarIngresoEmpleado**
+DELIMITER $$
+
+CREATE PROCEDURE RegistrarIngresoEmpleado(
+    IN p_empleado_id INT,
+    IN p_fecha_ingreso DATE
+)
+BEGIN
+
+    UPDATE Empleados
+    SET fecha_ingreso = p_fecha_ingreso
+    WHERE empleado_id = p_empleado_id;
+END$$
+
+DELIMITER ;
+
+CALL RegistrarIngresoEmpleado(1, '2024-11-01');
+
+
+18. **Manejar la devolución de ventas**
+DELIMITER $$
+
+CREATE PROCEDURE RegistrarDevolucionVenta(
+    IN p_venta_id INT,
+    IN p_producto_id INT,
+    IN p_cantidad_devuelta INT,
+    IN p_fecha_devolucion DATE
+)
+BEGIN
+    DECLARE v_precio_unitario DECIMAL(10,2);
+    DECLARE v_cantidad_original INT;
+
+    SELECT precio_unitario, cantidad
+    INTO v_precio_unitario, v_cantidad_original
+    FROM Ventas
+    WHERE venta_id = p_venta_id AND producto_id = p_producto_id;
+
+    IF p_cantidad_devuelta <= v_cantidad_original THEN
+
+        UPDATE Inventarios
+        SET cantidad = cantidad + p_cantidad_devuelta
+        WHERE producto_id = p_producto_id;
+
+        UPDATE Ventas
+        SET cantidad = cantidad - p_cantidad_devuelta
+        WHERE venta_id = p_venta_id AND producto_id = p_producto_id;
+
+
+        INSERT INTO Devoluciones (venta_id, producto_id, cantidad_devuelta, fecha_devolucion)
+        VALUES (p_venta_id, p_producto_id, p_cantidad_devuelta, p_fecha_devolucion);
+    ELSE
+
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'La cantidad devuelta no puede ser mayor que la cantidad original de la venta';
+    END IF;
 END $$
 
 DELIMITER ;
 
-CALL sp_actualizar_estado_tarea(1, 'Completada');
+CALL RegistrarDevolucionVenta(1, 10, 2, '2024-11-26');
 
 
-16. Generar reporte de ventas por fecha
+19. **GenerarInformeVentas**
 DELIMITER $$
-CREATE PROCEDURE sp_reporte_ventas_por_fecha(
+
+CREATE PROCEDURE GenerarInformeVentas(
     IN p_fecha_inicio DATE,
     IN p_fecha_fin DATE
 )
 BEGIN
-    SELECT v.id_venta, v.fecha, v.total, c.nombre AS cliente, e.nombre AS empleado
-    FROM Ventas v
-    JOIN Clientes c ON v.id_cliente = c.id_cliente
-    JOIN Empleados e ON v.id_empleado = e.id_empleado
-    WHERE v.fecha BETWEEN p_fecha_inicio AND p_fecha_fin;
-END $$
+
+    SELECT * FROM Ventas
+    WHERE fecha_venta BETWEEN p_fecha_inicio AND p_fecha_fin;
+END$$
 
 DELIMITER ;
 
-CALL sp_reporte_ventas_por_fecha('2024-11-01', '2024-11-24');
+CALL GenerarInformeVentas('2024-01-15', '2024-03-06');
 
 
-17. Generar reporte de compras por proveedor
+20. **GenerarInformeMantenimiento**
 DELIMITER $$
-CREATE PROCEDURE sp_reporte_compras_por_proveedor(
-    IN p_id_proveedor INT
+
+CREATE PROCEDURE GenerarInformeMantenimiento(
+    IN p_fecha_inicio DATE,
+    IN p_fecha_fin DATE
 )
 BEGIN
-    SELECT c.id_compra, c.fecha, c.total, e.nombre AS empleado
-    FROM Compras c
-    JOIN Empleados e ON c.id_empleado = e.id_empleado
-    WHERE c.id_proveedor = p_id_proveedor;
-END $$
+
+    SELECT * FROM Mantenimiento_Maquinaria
+    WHERE fecha_mantenimiento BETWEEN p_fecha_inicio AND p_fecha_fin;
+END$$
 
 DELIMITER ;
 
-CALL sp_reporte_compras_por_proveedor(1);
+CALL GenerarInformeMantenimiento('2024-11-01', '2024-11-26');
 
-
-18. Eliminar un producto del inventario
-DELIMITER $$
-CREATE PROCEDURE sp_eliminar_producto_inventario(
-    IN p_id_producto INT
-)
-BEGIN
-    DELETE FROM Inventario
-    WHERE id_producto = p_id_producto;
-END $$
-
-DELIMITER ;
-
-CALL sp_eliminar_producto_inventario(1);
-
-
-19. Actualizar precio de un producto
-DELIMITER $$
-CREATE PROCEDURE sp_actualizar_precio_producto(
-    IN p_id_producto INT,
-    IN p_precio DECIMAL(10, 2)
-)
-BEGIN
-    UPDATE Productos
-    SET precio = p_precio
-    WHERE id_producto = p_id_producto;
-END $$
-
-DELIMITER ;
-CALL sp_actualizar_precio_producto(2, 30.00);
-
-
-20. Registrar una relación entre cliente y producto
-DELIMITER $$
-CREATE PROCEDURE sp_registrar_relacion_cliente_producto(
-    IN p_id_cliente INT,
-    IN p_id_producto INT
-)
-BEGIN
-    INSERT INTO RelacionClientesProductos (id_cliente, id_producto)
-    VALUES (p_id_cliente, p_id_producto);
-END $$
-
-DELIMITER ;
-
-CALL sp_registrar_relacion_cliente_producto(1, 1);
