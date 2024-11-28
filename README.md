@@ -1,7 +1,5 @@
-# 🌾 **Gestión de una Finca de Producción Agrícola**  
-### BASE DE DATOS
-El proyecto de **"Gestión de una Finca de Producción Agrícola"** se centra en el diseño e implementación de una base de datos para administrar de manera eficiente los procesos operativos, productivos y administrativos de una finca agrícola. Este sistema organiza y centraliza información en áreas clave como recursos humanos, cultivos, inventarios, ventas, costos y logística.  
-
+### Gestión Integral de Finca Agrícola 🌱
+Sistema diseñado para centralizar y optimizar la gestión de cultivos, inventarios, ventas, costos, logística, proveedores, clientes, maquinaria y mantenimiento, mejorando la eficiencia operativa y administrativa.  
 ---
 
 ## 🎯 **Propósito de la Base de Datos**  
@@ -81,13 +79,6 @@ La implementación de esta base de datos ofrece:
 - 📊 **Mejor Toma de Decisiones**: Proporciona análisis precisos sobre costos y productividad.  
 - 🗂️ **Trazabilidad Completa**: Historial detallado de acciones y cambios.  
 - 🌱 **Sostenibilidad**: Optimiza recursos y mejora la planificación agrícola.  
-
----
-
-
-# 🌾 Sistema de Gestión Integral para la Finca 🌱
-
-Este sistema está diseñado para administrar todos los aspectos operativos de una finca, incluyendo el manejo de proveedores, productos, clientes, empleados, maquinaria, cultivos, inventarios, ventas, compras, mantenimiento y costos operativos. A continuación, se describe la estructura de la base de datos y las funciones de cada tabla.
 
 ---
 
