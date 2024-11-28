@@ -495,3 +495,86 @@ Las funcionalidades de este sistema se implementan a través de funciones almace
 
 Cada función está diseñada para manejar distintos aspectos de la finca, lo que facilita la toma de decisiones y la planificación agrícola.
 
+
+## Control de Acceso y Roles de Usuario
+### Usuario: admin
+
+- Descripción: El usuario admin tiene permisos totales sobre la base de datos Finca_Agricola, lo que le permite realizar cualquier operación en cualquier tabla de la base de datos.
+
+- Permisos:
+Acceso completo (SELECT, INSERT, UPDATE, DELETE) en todas las tablas de la base de datos Finca_Agricola.
+Propósito: Este usuario es el encargado de gestionar y mantener la base de datos en su totalidad.
+Usuario: vendedor
+
+- Descripción: El usuario vendedor está diseñado para gestionar las ventas y los inventarios de la finca agrícola.
+Permisos:
+En la tabla Ventas, tiene permisos de SELECT, INSERT y UPDATE, lo que le permite consultar, registrar y    actualizar ventas.
+En la tabla Inventarios, tiene permisos de SELECT y UPDATE, lo que le permite consultar y modificar elinventario   de productos.
+Propósito: El vendedor puede manejar las transacciones de ventas y actualizar los inventarios, pero notiene    acceso a otras funciones administrativas.
+Usuario: contador
+
+- Descripción: El usuario contador tiene permisos para gestionar los costos operativos y los pagos asociados a  los proveedores, empleados y vendedores.
+
+- Permisos:
+En la tabla Costos_Operativos, tiene permisos de SELECT, INSERT y UPDATE para consultar, agregar y modificar los costos operativos.
+En las tablas Pagos_Proveedores, Pagos_Empleados, y Pagos_Vendedores, tiene permisos de SELECT, INSERT y UPDATE, lo que le permite gestionar los pagos a los proveedores, empleados y vendedores, respectivamente.
+
+- Propósito: El contador es responsable de llevar el control de los costos y pagos, permitiendo que las operaciones financieras sean monitoreadas y gestionadas.
+Usuario: operativo
+
+- Descripción: El usuario operativo está encargado de las tareas operativas relacionadas con los cultivos y la maquinaria en la finca.
+
+- Permisos:
+En la tabla Tareas, tiene permisos de SELECT, INSERT y UPDATE, lo que le permite gestionar las tareas operativas de la finca.
+En la tabla Maquinaria, tiene permisos de SELECT y UPDATE, lo que le permite consultar y actualizar los registros de maquinaria.
+En la tabla Cultivos, tiene permisos de SELECT, INSERT y UPDATE, lo que le permite gestionar los cultivos y sus registros.
+
+- Propósito: El usuario operativo puede gestionar las tareas diarias de la finca, mantener la maquinaria actualizada y gestionar los cultivos.
+Usuario: gestor_maquinaria
+
+- Descripción: El usuario gestor_maquinaria es responsable de la gestión de la maquinaria y su mantenimiento en la finca.
+Permisos:
+En la tabla Maquinaria, tiene permisos de SELECT, INSERT y UPDATE, lo que le permite gestionar los registros de maquinaria.
+
+En la tabla Mantenimiento_Maquinaria, tiene permisos de SELECT, INSERT y UPDATE, lo que le permite gestionar las tareas de mantenimiento de maquinaria.
+En la tabla Tareas_Mantenimiento, tiene permisos de SELECT, INSERT y UPDATE, lo que le permite gestionar las tareas de mantenimiento programadas.
+
+- Propósito: El gestor de maquinaria puede gestionar tanto el inventario de maquinaria como los registros y tareas de mantenimiento relacionadas, garantizando que la maquinaria esté en buen estado para las operaciones agrícolas.
+
+
+## 🛠️ Instalación y Dependencias
+📥 Instalar MySQL Workbench:
+MySQL Workbench es una herramienta visual para trabajar con bases de datos MySQL. Puedes descargarla desde el sitio oficial de MySQL: MySQL Workbench.
+
+📦 Instalar MySQL 8.0 o superior:
+MySQL es el sistema de gestión de bases de datos relacional utilizado en este proyecto. Asegúrate de descargar la última versión desde el sitio oficial: MySQL Community Server.
+
+Durante la instalación, asegúrate de configurar una contraseña segura para el usuario root y seleccionar las configuraciones predeterminadas a menos que necesites algo específico.
+
+💻 Tener un sistema operativo compatible con MySQL:
+MySQL es compatible con varios sistemas operativos, incluidos Windows, macOS y varias distribuciones de Linux. Asegúrate de que tu sistema operativo esté actualizado para evitar problemas de compatibilidad.
+
+⚙️ Configuración del entorno:
+Una vez instalado MySQL y MySQL Workbench, abre la herramienta y conecta a tu servidor MySQL usando las credenciales que configuraste durante la instalación.
+
+Puedes crear una base de datos específica para tu sistema de gestión de finca ejecutando:
+
+CREATE DATABASE finca_agricola;
+🔧 Instalación de dependencias adicionales (si aplica):
+Si tu implementación requiere características adicionales como triggers o procedimientos almacenados, asegúrate de estudiar la documentación de MySQL sobre estos elementos:
+
+- Triggers
+- Stored Procedures
+✅ Verificación de la instalación:
+Para asegurarte de que todo está configurado correctamente, prueba crear una tabla en tu nueva base de datos e inserta algunos registros de prueba. Esto puede ser tan simple como:
+
+USE finca_agricola;
+
+CREATE TABLE prueba (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(100) NOT NULL
+);
+
+INSERT INTO prueba (nombre) VALUES ('Registro de Prueba');
+
+SELECT * FROM prueba;

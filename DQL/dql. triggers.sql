@@ -203,8 +203,8 @@ DELIMITER ;
 SELECT TotalPagosEmpleados('2024-01-15', '2024-05-10');
 
 11. Obtener el rendimiento promedio de un cultivo
-DELIMITER //
 
+DELIMITER //
 CREATE FUNCTION RendimientoPromedioCultivo(cultivo_id INT) 
 RETURNS DECIMAL(10,2)
 DETERMINISTIC
@@ -224,8 +224,8 @@ SELECT RendimientoPromedioCultivo(1);
 
 
 12. Calcular el total de pagos a proveedores en un período
-DELIMITER //
 
+DELIMITER //
 CREATE FUNCTION TotalPagosProveedores(fecha_inicio DATE, fecha_fin DATE) 
 RETURNS DECIMAL(10,2)
 DETERMINISTIC
@@ -245,8 +245,8 @@ SELECT TotalPagosProveedores('2024-01-15', '2024-05-10');
 
 
 13. Calcular el costo promedio por hectárea de un cultivo
-DELIMITER //
 
+DELIMITER //
 CREATE FUNCTION CostoPromedioPorHectarea(cultivo_id INT)
 RETURNS DECIMAL(10,2)
 DETERMINISTIC
@@ -273,8 +273,8 @@ SELECT CostoPromedioPorHectarea(1);
 
 
 14. Obtener el total de tareas de mantenimiento programadas
-DELIMITER //
 
+DELIMITER //
 CREATE FUNCTION TotalTareasMantenimientoProgramadas(maquinaria_id INT) 
 RETURNS INT
 DETERMINISTIC
@@ -294,8 +294,8 @@ SELECT TotalTareasMantenimientoProgramadas(1);
 
 
 15. Calcular el total de cosechas realizadas de un cultivo
-DELIMITER //
 
+DELIMITER //
 CREATE FUNCTION TotalCosechasRealizadas(cultivo_id INT) 
 RETURNS INT
 DETERMINISTIC
@@ -315,8 +315,8 @@ SELECT TotalCosechasRealizadas(1);
 
 
 16. Calcular el total de empleados activos
-DELIMITER //
 
+DELIMITER //
 CREATE FUNCTION TotalEmpleadosActivos() 
 RETURNS INT
 DETERMINISTIC
@@ -336,8 +336,8 @@ SELECT TotalEmpleadosActivos();
 
 
 17. Obtener el total de ingresos por ventas en un período
-DELIMITER //
 
+DELIMITER //
 CREATE FUNCTION TotalIngresosPorVentas(fecha_inicio DATE, fecha_fin DATE) 
 RETURNS DECIMAL(10,2)
 DETERMINISTIC
@@ -357,8 +357,8 @@ SELECT TotalIngresosPorVentas('2024-01-15', '2024-03-06');
 
 
 18. Calcular el promedio de puntuaciones de evaluación de un empleado
-DELIMITER //
 
+DELIMITER //
 CREATE FUNCTION PromedioEvaluacionesEmpleado(empleado_id INT) 
 RETURNS DECIMAL(3,1)
 DETERMINISTIC
@@ -380,7 +380,6 @@ SELECT PromedioEvaluacionesEmpleado(1);
 19. Obtener el total de maquinaria en un estado específico
 
 DELIMITER //
-
 CREATE FUNCTION TotalMaquinariaPorEstado(estado_maquinaria VARCHAR(20)) 
 RETURNS INT
 DETERMINISTIC
@@ -403,7 +402,6 @@ SELECT TotalMaquinariaPorEstado('Operativa');
 20. Calcular el costo total de producción de un cultivo
 
 DELIMITER //
-
 CREATE FUNCTION CostoTotalProduccion(cultivo_id INT)
 RETURNS DECIMAL(10,2)
 DETERMINISTIC
@@ -414,6 +412,7 @@ BEGIN
     FROM Costos_Produccion
     WHERE cultivo_id = cultivo_id;
 
+    RETURN costo_total;
 END //
 
 DELIMITER ;

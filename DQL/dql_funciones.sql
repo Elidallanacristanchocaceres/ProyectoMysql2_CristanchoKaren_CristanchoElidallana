@@ -47,7 +47,7 @@ BEGIN
     
     SELECT COUNT(*) INTO en_mantenimiento 
     FROM Maquinaria
-    WHERE estado = 'En Mantenimiento';
+    WHERE estado = 'Mantenimiento';
 
     SET porcentaje = (en_mantenimiento / total_maquinaria) * 100;
     
@@ -230,7 +230,7 @@ BEGIN
     SELECT IFNULL(AVG(TIMESTAMPDIFF(DAY, fecha_inicio, fecha_fin)), 0)
     INTO promedio
     FROM Tareas
-    WHERE estado = 'Completada'
+    WHERE estado = 'Completado'
       AND fecha_inicio IS NOT NULL
       AND fecha_fin IS NOT NULL;
     
@@ -251,7 +251,7 @@ BEGIN
     SELECT COUNT(*) 
     INTO cantidad 
     FROM Maquinaria 
-    WHERE estado = 'En Uso';
+    WHERE estado = 'Activo';
     RETURN cantidad;
 END;
 //
