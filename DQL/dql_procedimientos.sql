@@ -411,36 +411,28 @@ CALL RegistrarDevolucionVenta(1, 10, 2, '2024-11-26');
 
 19. **GenerarInformeVentas**
 DELIMITER $$
-
 CREATE PROCEDURE GenerarInformeVentas(
     IN p_fecha_inicio DATE,
     IN p_fecha_fin DATE
 )
 BEGIN
-
     SELECT * FROM Ventas
     WHERE fecha_venta BETWEEN p_fecha_inicio AND p_fecha_fin;
 END$$
-
 DELIMITER ;
-
 CALL GenerarInformeVentas('2024-01-15', '2024-03-06');
 
 
 20. **GenerarInformeMantenimiento**
 DELIMITER $$
-
 CREATE PROCEDURE GenerarInformeMantenimiento(
     IN p_fecha_inicio DATE,
     IN p_fecha_fin DATE
 )
 BEGIN
-
     SELECT * FROM Mantenimiento_Maquinaria
     WHERE fecha_mantenimiento BETWEEN p_fecha_inicio AND p_fecha_fin;
 END$$
-
 DELIMITER ;
-
 CALL GenerarInformeMantenimiento('2024-11-01', '2024-11-26');
 
