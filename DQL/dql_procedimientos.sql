@@ -1,4 +1,4 @@
-1. **RegistrarNuevaVenta**
+-- 1. **RegistrarNuevaVenta**
 
 DELIMITER $$
 
@@ -34,7 +34,7 @@ DELIMITER ;
 
 CALL RegistrarNuevaVenta(1, 30, 3, 19.70, '2024-03-06');
 
-2. **RegistrarNuevoProveedor**
+-- 2. **RegistrarNuevoProveedor**
 
 DELIMITER $$
 
@@ -55,7 +55,7 @@ DELIMITER ;
 CALL RegistrarNuevoProveedor('Lucia', 'Calle Ficticia 123', '555-1234', 'lucia@email.com');
 
 
-3. **RegistrarNuevoEmpleado**
+-- 3. **RegistrarNuevoEmpleado**
 DELIMITER $$
 
 CREATE PROCEDURE RegistrarNuevoEmpleado(
@@ -75,7 +75,7 @@ DELIMITER ;
 CALL RegistrarNuevoEmpleado('Juan Pérez', 'Operador', 1200.00, '2024-11-01', 'Activo');
 
 
-4. **ActualizarEstadoMaquinaria**
+-- 4. **ActualizarEstadoMaquinaria**
 DELIMITER $$
 
 CREATE PROCEDURE ActualizarEstadoMaquinaria(
@@ -94,7 +94,7 @@ DELIMITER ;
 CALL ActualizarEstadoMaquinaria(1, 'En mantenimiento');
 
 
-5. **RegistrarMantenimientoMaquinaria**
+-- 5. **RegistrarMantenimientoMaquinaria**
 DELIMITER $$
 
 CREATE PROCEDURE RegistrarMantenimientoMaquinaria(
@@ -119,7 +119,7 @@ DELIMITER ;
 CALL RegistrarMantenimientoMaquinaria(1, '2024-11-25', 'Revisión general', 200.00, 'Cambio de aceite y revisión de partes');
 
 
-6. **ActualizarInventario**
+-- 6. **ActualizarInventario**
 DELIMITER $$
 
 CREATE PROCEDURE ActualizarInventario(
@@ -144,7 +144,7 @@ DELIMITER ;
 CALL ActualizarInventario(1, 50, '2024-11-26');
 
 
-7. **RegistrarNuevaCompra**
+-- 7. **RegistrarNuevaCompra**
 DELIMITER $$
 
 CREATE PROCEDURE RegistrarNuevaCompra(
@@ -168,7 +168,7 @@ DELIMITER ;
 CALL RegistrarNuevaCompra(1, 1, 100, 45.00, '2024-11-25');
 
 
-8. **ActualizarEstadoTarea**
+-- 8. **ActualizarEstadoTarea**
 DELIMITER $$
 
 CREATE PROCEDURE ActualizarEstadoTarea(
@@ -187,7 +187,7 @@ DELIMITER ;
 CALL ActualizarEstadoTarea(1, 'Completado');
 
 
-9. **RegistrarNuevaTarea**
+-- 9. **RegistrarNuevaTarea**
 DELIMITER $$
 
 CREATE PROCEDURE RegistrarNuevaTarea(
@@ -207,7 +207,7 @@ DELIMITER ;
 CALL RegistrarNuevaTarea('Revisión de maquinaria', '2024-11-25', '2024-11-30', 'Pendiente');
 
 
-10. **RegistrarHistorialCambioEmpleado**
+-- 10. **RegistrarHistorialCambioEmpleado**
 DELIMITER $$
 
 CREATE PROCEDURE RegistrarHistorialCambioEmpleado(
@@ -228,7 +228,7 @@ DELIMITER ;
 CALL RegistrarHistorialCambioEmpleado(1, 'Salario', 1200.00, 1300.00, '2024-11-26');
 
 
-11. **RegistrarHistorialCambioInventario**
+-- 11. **RegistrarHistorialCambioInventario**
 DELIMITER $$
 
 CREATE PROCEDURE RegistrarHistorialCambioInventario(
@@ -249,7 +249,7 @@ DELIMITER ;
 CALL RegistrarHistorialCambioInventario(1, 'Ajuste por error', 50, 60, '2024-11-26');
 
 
-12. **ActualizarEstadoCultivo**
+-- 12. **ActualizarEstadoCultivo**
 DELIMITER $$
 
 CREATE PROCEDURE ActualizarRendimientoCultivo(
@@ -267,7 +267,7 @@ DELIMITER ;
 CALL ActualizarRendimientoCultivo(1, 9.00);
 
 
-13. **RegistrarControlCalidad**
+-- 13. **RegistrarControlCalidad**
 DELIMITER $$
 
 CREATE PROCEDURE RegistrarControlCalidad(
@@ -286,7 +286,7 @@ DELIMITER ;
 CALL RegistrarControlCalidad(1, '2024-11-25', 'Aprobado', 'El producto cumple con los estándares de calidad');
 
 
-14. **RegistrarCosecha**
+-- 14. **RegistrarCosecha**
 DELIMITER $$
 
 CREATE PROCEDURE RegistrarCosecha(
@@ -310,7 +310,7 @@ DELIMITER ;
 CALL RegistrarCosecha(1, 100, '2024-11-26', NULL, 'Mercado Local');
 
 
-15. **ActualizarFechaProducto**
+-- 15. **ActualizarFechaProducto**
 DELIMITER $$
 
 CREATE PROCEDURE ActualizarFechaActualizacionProducto(
@@ -328,7 +328,7 @@ DELIMITER ;
 CALL ActualizarFechaActualizacionProducto(1, '2025-11-26');
 
 
-16. **RegistrarPagoProveedor**
+-- 16. **RegistrarPagoProveedor**
 DELIMITER $$
 
 CREATE PROCEDURE RegistrarPagoProveedor(
@@ -347,7 +347,7 @@ DELIMITER ;
 CALL RegistrarPagoProveedor(1, 500.00, '2024-11-26');
 
 
-### 17. **RegistrarIngresoEmpleado**
+-- 17. **RegistrarIngresoEmpleado**
 DELIMITER $$
 
 CREATE PROCEDURE RegistrarIngresoEmpleado(
@@ -366,7 +366,7 @@ DELIMITER ;
 CALL RegistrarIngresoEmpleado(1, '2024-11-01');
 
 
-18. **Manejar la devolución de ventas**
+-- 18. **Manejar la devolución de ventas**
 DELIMITER $$
 
 CREATE PROCEDURE RegistrarDevolucionVenta(
@@ -409,7 +409,7 @@ DELIMITER ;
 CALL RegistrarDevolucionVenta(1, 10, 2, '2024-11-26');
 
 
-19. **GenerarInformeVentas**
+-- 19. **GenerarInformeVentas**
 DELIMITER $$
 CREATE PROCEDURE GenerarInformeVentas(
     IN p_fecha_inicio DATE,
@@ -423,7 +423,7 @@ DELIMITER ;
 CALL GenerarInformeVentas('2024-01-15', '2024-03-06');
 
 
-20. **GenerarInformeMantenimiento**
+-- 20. **GenerarInformeMantenimiento**
 DELIMITER $$
 CREATE PROCEDURE GenerarInformeMantenimiento(
     IN p_fecha_inicio DATE,

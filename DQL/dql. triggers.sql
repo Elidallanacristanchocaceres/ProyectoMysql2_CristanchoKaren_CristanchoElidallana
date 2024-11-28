@@ -1,421 +1,335 @@
-1. Calcular el rendimiento promedio por hectárea de cada cultivo
+-- 1. Actualizar el inventario después de una venta
 DELIMITER $$
-CREATE FUNCTION CalcularRendimientoPromedio(cultivo_id INT)
-RETURNS DECIMAL(10,2)
-DETERMINISTIC
+CREATE TRIGGER after_venta_insert
+AFTER INSERT ON Ventas
+FOR EACH ROW
 BEGIN
-    DECLARE rendimiento_promedio DECIMAL(10,2);
-
-    SELECT AVG(rendimiento) INTO rendimiento_promedio
-    FROM Rendimiento_Cultivo
-    WHERE cultivo_id = cultivo_id;
-
-    RETURN rendimiento_promedio;
+    UPDATE Inventarios
+    SET cantidad = cantidad - NEW.cantidad
+    WHERE producto_id = NEW.producto_id;
 END $$
-
 DELIMITER ;
 
-SELECT CalcularRendimientoPromedio(1);
+-- Para probar
+INSERT INTO Inventarios (producto_id, cantidad, fecha_actualizacion) VALUES (1, 100, CURDATE());
+INSERT INTO Ventas (producto_id, cantidad, precio_unitario, fecha_venta, cliente_id) VALUES (1, 10, 50.00, CURDATE(), 1);
+SELECT * FROM Inventarios WHERE producto_id = 1; 
 
 
-2. Estimar el costo operativo total de la finca en un período de tiempo determinado
+-- 2. Registrar cambios en el salario de los empleados
 DELIMITER $$
-CREATE FUNCTION CostoOperativoTotal(fecha_inicio DATE, fecha_fin DATE)
-RETURNS DECIMAL(10,2)
-DETERMINISTIC
+CREATE TRIGGER after_empleado_update
+AFTER UPDATE ON Empleados
+FOR EACH ROW
 BEGIN
-    DECLARE total_costo DECIMAL(10,2);
-
-    SELECT COALESCE(SUM(monto), 0) INTO total_costo
-    FROM Costos_Operativos
-    WHERE fecha BETWEEN fecha_inicio AND fecha_fin;
-
-    RETURN total_costo;
-END $$
-
-DELIMITER ;
-
-SELECT CostoOperativoTotal('2024-01-15', '2024-05-05');
-
-
-3. Calcular el total de ventas por cliente
-DELIMITER $$
-CREATE FUNCTION TotalVentasPorCliente(cliente_id INT)
-RETURNS DECIMAL(10,2)
-DETERMINISTIC
-BEGIN
-    DECLARE total_ventas DECIMAL(10,2);
-
-    SELECT COALESCE(SUM(cantidad * precio_unitario), 0) INTO total_ventas
-    FROM Ventas
-    WHERE cliente_id = cliente_id;
-
-    RETURN total_ventas;
-END $$
-
-DELIMITER ;
-
-SELECT TotalVentasPorCliente(1); 
-
-
-4. Calcular el total de compras por proveedor
-DELIMITER $$
-CREATE FUNCTION TotalComprasPorProveedor(proveedor_id INT) 
-RETURNS DECIMAL(10,2)
-DETERMINISTIC
-BEGIN
-DECLARE total_compras DECIMAL(10,2);
-    
-    SELECT SUM(cantidad * precio_unitario) INTO total_compras
-    FROM Compras
-    WHERE proveedor_id = proveedor_id;
-    
-    RETURN total_compras;
-END $$
-
-DELIMITER ;
-SELECT TotalComprasPorProveedor(1);
-
-
-5. Obtener el salario promedio de los empleados
-DELIMITER $$
-CREATE FUNCTION SalarioPromedio() 
-RETURNS DECIMAL(10,2)
-DETERMINISTIC
-BEGIN
-    DECLARE promedio DECIMAL(10,2);
-    
-    SELECT AVG(salario) INTO promedio
-    FROM Empleados;
-    
-    RETURN promedio;
-END $$
-
-DELIMITER ;
-
-SELECT SalarioPromedio();
-
-
-6. Calcular el total de inventario de un producto
-DELIMITER $$
-CREATE FUNCTION TotalInventarioPorProducto(producto_id INT) 
-RETURNS INT
-DETERMINISTIC
-BEGIN
-    DECLARE total_inventario INT;
-    
-    SELECT SUM(cantidad) INTO total_inventario
-    FROM Inventarios
-    WHERE producto_id = producto_id;
-    
-    RETURN total_inventario;
-END $$
-
-DELIMITER ;
-
-SELECT TotalInventarioPorProducto(1);
-
-
-7. Calcular el costo total de mantenimiento de maquinaria
-DELIMITER $$
-CREATE FUNCTION CostoTotalMantenimiento(maquinaria_id INT) 
-RETURNS DECIMAL(10,2)
-DETERMINISTIC
-BEGIN
-    DECLARE total_mantenimiento DECIMAL(10,2);
-    
-    SELECT SUM(costo) INTO total_mantenimiento
-    FROM Mantenimiento_Maquinaria
-    WHERE maquinaria_id = maquinaria_id;
-    
-    RETURN total_mantenimiento;
-END $$
-
-DELIMITER ;
-
-SELECT CostoTotalMantenimiento(1);
-
-
-8. Contar el número de tareas pendientes
-DELIMITER $$
-CREATE FUNCTION ContarTareasPendientes() 
-RETURNS INT
-DETERMINISTIC
-BEGIN
-    DECLARE total_tareas INT;
-    
-    SELECT COUNT(*) INTO total_tareas
-    FROM Tareas
-    WHERE estado = 'Pendiente';
-    
-    RETURN total_tareas;
-END $$
-
-DELIMITER ;
-
-SELECT ContarTareasPendientes();
-
-
-9. Obtener el porcentaje de calidad de un producto
-DELIMITER $$
-CREATE FUNCTION PorcentajeCalidadProducto(producto_id INT) 
-RETURNS DECIMAL(5,2)
-DETERMINISTIC
-BEGIN
-    DECLARE total_revisiones INT;
-    DECLARE total_aprobadas INT;
-    DECLARE porcentaje DECIMAL(5,2);
-    
-    SELECT COUNT(*) INTO total_revisiones
-    FROM Control_Calidad
-    WHERE producto_id = producto_id;
-    
-    SELECT COUNT(*) INTO total_aprobadas
-    FROM Control_Calidad
-    WHERE producto_id = producto_id AND resultado = 'Aprobado';
-    
-    SET porcentaje = (total_aprobadas / total_revisiones) * 100;
-    
-    RETURN porcentaje;
-END $$
-
-DELIMITER ;
-
-SELECT PorcentajeCalidadProducto(1);
-
-10. Calcular el total de pagos a empleados en un período
-DELIMITER $$
-CREATE FUNCTION TotalPagosEmpleados(fecha_inicio DATE, fecha_fin DATE) 
-RETURNS DECIMAL(10,2)
-DETERMINISTIC
-BEGIN
-    DECLARE total_pagos DECIMAL(10,2);
-    
-    SELECT SUM(monto) INTO total_pagos
-    FROM Pagos_Empleados
-    WHERE fecha_pago BETWEEN fecha_inicio AND fecha_fin;
-    
-    RETURN total_pagos;
-END $$
-
-DELIMITER ;
-
-SELECT TotalPagosEmpleados('2024-01-15', '2024-05-10');
-
-11. Obtener el rendimiento promedio de un cultivo
-
-DELIMITER //
-CREATE FUNCTION RendimientoPromedioCultivo(cultivo_id INT) 
-RETURNS DECIMAL(10,2)
-DETERMINISTIC
-BEGIN
-    DECLARE promedio DECIMAL(10,2);
-    
-    SELECT AVG(rendimiento) INTO promedio
-    FROM Rendimiento_Cultivo
-    WHERE cultivo_id = cultivo_id;
-    
-    RETURN promedio;
-END //
-
-DELIMITER ;
-
-SELECT RendimientoPromedioCultivo(1); 
-
-
-12. Calcular el total de pagos a proveedores en un período
-
-DELIMITER //
-CREATE FUNCTION TotalPagosProveedores(fecha_inicio DATE, fecha_fin DATE) 
-RETURNS DECIMAL(10,2)
-DETERMINISTIC
-BEGIN
-    DECLARE total_pagos DECIMAL(10,2);
-    
-    SELECT SUM(monto) INTO total_pagos
-    FROM Pagos_Proveedores
-    WHERE fecha_pago BETWEEN fecha_inicio AND fecha_fin;
-    
-    RETURN total_pagos;
-END //
-
-DELIMITER ;
-
-SELECT TotalPagosProveedores('2024-01-15', '2024-05-10');
-
-
-13. Calcular el costo promedio por hectárea de un cultivo
-
-DELIMITER //
-CREATE FUNCTION CostoPromedioPorHectarea(cultivo_id INT)
-RETURNS DECIMAL(10,2)
-DETERMINISTIC
-BEGIN
-    DECLARE costo_total DECIMAL(10,2);
-    DECLARE hectareas INT;
-
-    SELECT COALESCE(SUM(monto), 0) INTO costo_total
-    FROM Costos_Produccion
-    WHERE cultivo_id = cultivo_id;
-
-    SELECT COALESCE(SUM(hectareas), 0) INTO hectareas
-    FROM Cultivos
-    WHERE cultivo_id = cultivo_id;
-
-    IF hectareas = 0 THEN
-        RETURN 0;
+    IF OLD.salario <> NEW.salario THEN
+        INSERT INTO Historial_Empleados (empleado_id, tipo_cambio, valor_anterior, valor_nuevo, fecha_cambio)
+        VALUES (NEW.empleado_id, 'Salario', OLD.salario, NEW.salario, CURDATE());
     END IF;
-END //
-
+END $$
 DELIMITER ;
 
-SELECT CostoPromedioPorHectarea(1);
+-- Para probar
+UPDATE Empleados SET salario = 1200.00 WHERE empleado_id = 1;
+SELECT * FROM Historial_Empleados WHERE empleado_id = 1;
 
-
-14. Obtener el total de tareas de mantenimiento programadas
-
-DELIMITER //
-CREATE FUNCTION TotalTareasMantenimientoProgramadas(maquinaria_id INT) 
-RETURNS INT
-DETERMINISTIC
+-- 3. Mantener el estado de la maquinaria al registrar un mantenimiento
+DELIMITER $$
+CREATE TRIGGER after_mantenimiento_insert
+AFTER INSERT ON Mantenimiento_Maquinaria
+FOR EACH ROW
 BEGIN
-    DECLARE total_tareas INT;
-    
-    SELECT COUNT(*) INTO total_tareas
-    FROM Tareas_Mantenimiento
-    WHERE maquinaria_id = maquinaria_id AND estado = 'Programada';
-    
-    RETURN total_tareas;
-END //
-
+    UPDATE Maquinaria
+    SET estado = 'En mantenimiento'
+    WHERE maquinaria_id = NEW.maquinaria_id;
+END $$
 DELIMITER ;
 
-SELECT TotalTareasMantenimientoProgramadas(1);
+-- Para probar
+INSERT INTO Mantenimiento_Maquinaria (maquinaria_id, fecha_mantenimiento, tipo_mantenimiento, costo, descripcion) VALUES (1, CURDATE(), 'Revisión', 100.00, 'Revisión general');
+SELECT * FROM Maquinaria WHERE maquinaria_id = 1; 
 
 
-15. Calcular el total de cosechas realizadas de un cultivo
-
-DELIMITER //
-CREATE FUNCTION TotalCosechasRealizadas(cultivo_id INT) 
-RETURNS INT
-DETERMINISTIC
+-- 4. Registrar auditoría de cambios en el inventario
+DELIMITER $$
+CREATE TRIGGER after_inventario_update
+AFTER UPDATE ON Inventarios
+FOR EACH ROW
 BEGIN
-    DECLARE total_cosechas INT;
-    
-    SELECT COUNT(*) INTO total_cosechas
-    FROM Cosecha
-    WHERE cultivo_id = cultivo_id;
-    
-    RETURN total_cosechas;
-END //
-
+    INSERT INTO Historial_Inventarios (inventario_id, tipo_cambio, cantidad_anterior, cantidad_nueva, fecha_cambio)
+    VALUES (NEW.inventario_id, 'Ajuste', OLD.cantidad, NEW.cantidad, CURDATE());
+END $$
 DELIMITER ;
 
-SELECT TotalCosechasRealizadas(1);
+-- Para probar
+UPDATE Inventarios SET cantidad = 50 WHERE inventario_id = 1;
+SELECT * FROM Historial_Inventarios WHERE inventario_id = 1; 
 
 
-16. Calcular el total de empleados activos
-
-DELIMITER //
-CREATE FUNCTION TotalEmpleadosActivos() 
-RETURNS INT
-DETERMINISTIC
+-- 5. Auditar accesos de usuario
+DELIMITER $$
+CREATE TRIGGER after_usuario_insert
+AFTER INSERT ON Usuarios
+FOR EACH ROW
 BEGIN
-    DECLARE total_empleados INT;
-    
-    SELECT COUNT(*) INTO total_empleados
-    FROM Empleados
-    WHERE estado = 'Activo';
-    
-    RETURN total_empleados;
-END //
-
+    INSERT INTO Auditoria_Accessos (usuario_id, accion, fecha_hora)
+    VALUES (NEW.usuario_id, 'Registro de Usuario', NOW());
+END $$
 DELIMITER ;
 
-SELECT TotalEmpleadosActivos();
+-- Para probar
+INSERT INTO Usuarios (nombre_usuario, contrasena, rol_id) VALUES ('usuario_test', 'seguro123', 2);
+SELECT * FROM Auditoria_Accessos WHERE usuario_id = (SELECT usuario_id FROM Usuarios WHERE nombre_usuario = 'usuario_test');
 
-
-17. Obtener el total de ingresos por ventas en un período
-
-DELIMITER //
-CREATE FUNCTION TotalIngresosPorVentas(fecha_inicio DATE, fecha_fin DATE) 
-RETURNS DECIMAL(10,2)
-DETERMINISTIC
+-- 6. Marcar como completadas las tareas finalizadas
+DELIMITER $$
+CREATE TRIGGER after_tarea_update
+AFTER UPDATE ON Tareas
+FOR EACH ROW
 BEGIN
-    DECLARE total_ingresos DECIMAL(10,2);
-    
-    SELECT SUM(cantidad * precio_unitario) INTO total_ingresos
-    FROM Ventas
-    WHERE fecha_venta BETWEEN fecha_inicio AND fecha_fin;
-    
-    RETURN total_ingresos;
-END //
-
+    IF NEW.estado = 'Completado' THEN
+        UPDATE Tareas
+        SET estado = 'Finalizado'
+        WHERE tarea_id = NEW.tarea_id;
+    END IF;
+END $$
 DELIMITER ;
 
-SELECT TotalIngresosPorVentas('2024-01-15', '2024-03-06');
+-- Para probar
+INSERT INTO Tareas (descripcion, fecha_inicio, fecha_fin, estado) VALUES ('Tarea de prueba', CURDATE(), DATE_ADD(CURDATE(), INTERVAL 5 DAY), 'En progreso');
+UPDATE Tareas SET estado = 'Completado' WHERE tarea_id = 1;
+SELECT * FROM Tareas WHERE tarea_id = 1;
 
 
-18. Calcular el promedio de puntuaciones de evaluación de un empleado
-
-DELIMITER //
-CREATE FUNCTION PromedioEvaluacionesEmpleado(empleado_id INT) 
-RETURNS DECIMAL(3,1)
-DETERMINISTIC
+-- 7. Auditar accesos de usuario
+DELIMITER $$
+CREATE TRIGGER after_usuario_insert
+AFTER INSERT ON Usuarios
+FOR EACH ROW
 BEGIN
-    DECLARE promedio DECIMAL(3,1);
-    
-    SELECT AVG(puntuacion) INTO promedio
-    FROM Evaluacion_Desempeno
-    WHERE empleado_id = empleado_id;
-    
-    RETURN promedio;
-END //
-
+    INSERT INTO Auditoria_Accessos (usuario_id, accion, fecha_hora)
+    VALUES (NEW.usuario_id, 'Registro de Usuario', NOW());
+END $$
 DELIMITER ;
 
-SELECT PromedioEvaluacionesEmpleado(1);
+-- Para probar
+INSERT INTO Usuarios (nombre_usuario, contrasena, rol_id) VALUES ('usuario1', 'password123', 1);
+SELECT * FROM Auditoria_Accessos WHERE usuario_id = (SELECT usuario_id FROM Usuarios WHERE nombre_usuario = 'usuario1');
 
 
-19. Obtener el total de maquinaria en un estado específico
-
-DELIMITER //
-CREATE FUNCTION TotalMaquinariaPorEstado(estado_maquinaria VARCHAR(20)) 
-RETURNS INT
-DETERMINISTIC
+-- 8. Actualizar automáticamente el inventario cuando se registre un nuevo producto
+DELIMITER $$
+CREATE TRIGGER after_producto_insert
+AFTER INSERT ON Productos
+FOR EACH ROW
 BEGIN
-    DECLARE total_maquinaria INT;
-    
-    SELECT COUNT(*) INTO total_maquinaria
-    FROM Maquinaria
-    WHERE estado = estado_maquinaria;
-    
-    RETURN total_maquinaria;
-END //
-
+    INSERT INTO Inventarios (producto_id, cantidad, fecha_actualizacion)
+    VALUES (NEW.producto_id, 0, CURDATE());
+END $$
 DELIMITER ;
 
-SELECT TotalMaquinariaPorEstado('Operativa');
+INSERT INTO Productos (nombre, tipo_producto, unidad_medida, descripcion) VALUES ('Naranja', 'Fruta', 'Kilo', 'Naranja dulce');
+SELECT * FROM Inventarios WHERE producto_id = (SELECT producto_id FROM Productos WHERE nombre = 'Naranja' LIMIT 1);
 
 
-
-20. Calcular el costo total de producción de un cultivo
-
-DELIMITER //
-CREATE FUNCTION CostoTotalProduccion(cultivo_id INT)
-RETURNS DECIMAL(10,2)
-DETERMINISTIC
+-- 9. Prevenir que tareas se eliminen sin ser completadas
+DELIMITER $$
+CREATE TRIGGER before_tarea_delete
+BEFORE DELETE ON Tareas
+FOR EACH ROW
 BEGIN
-    DECLARE costo_total DECIMAL(10,2);
-
-    SELECT COALESCE(SUM(monto), 0) INTO costo_total
-    FROM Costos_Produccion
-    WHERE cultivo_id = cultivo_id;
-
-    RETURN costo_total;
-END //
-
+    IF OLD.estado <> 'Completada' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se puede eliminar la tarea, no está completada';
+    END IF;
+END $$
 DELIMITER ;
 
-SELECT CostoTotalProduccion(1);
+-- Para probar
+DELETE FROM Tareas WHERE tarea_id = 1; 
 
+-- 10. Auditar cambios de calidad de los productos
+DELIMITER $$
+CREATE TRIGGER after_control_calidad_insert
+AFTER INSERT ON Control_Calidad
+FOR EACH ROW
+BEGIN
+    INSERT INTO Control_Calidad_Historial (producto_id, fecha_revision, resultado, observaciones)
+    VALUES (NEW.producto_id, NEW.fecha_revision, NEW.resultado, NEW.observaciones);
+END $$
+DELIMITER ;
+
+-- Para probar
+INSERT INTO Control_Calidad (producto_id, fecha_revision, resultado, observaciones) VALUES (1, CURDATE(), 'Aprobado', 'Cumple con los estándares');
+SELECT * FROM Control_Calidad WHERE producto_id = 1; 
+
+
+-- 11. Restablecer estado de un empleado a inactivo
+DELIMITER $$
+CREATE TRIGGER after_pagos_empleado_insert
+AFTER INSERT ON Pagos_Empleados
+FOR EACH ROW
+BEGIN
+    UPDATE Empleados
+    SET estado = 'Activo'
+    WHERE empleado_id = NEW.empleado_id;
+    
+    UPDATE Empleados
+    SET estado = 'Inactivo'
+    WHERE empleado_id = NEW.empleado_id AND (CURDATE() - (SELECT MAX(fecha_pago) FROM Pagos_Empleados WHERE empleado_id = NEW.empleado_id)) > 60;
+END $$
+DELIMITER ;
+
+-- Para probar
+INSERT INTO Pagos_Empleados (empleado_id, monto, fecha_pago, metodo_pago) VALUES (1, 1000.00, CURDATE(), 'Transferencia'); 
+
+
+-- 12. Incrementar la cantidad de productos después de una compra
+DELIMITER $$
+CREATE TRIGGER after_compra_insert
+AFTER INSERT ON Compras
+FOR EACH ROW
+BEGIN
+    UPDATE Inventarios
+    SET cantidad = cantidad + NEW.cantidad
+    WHERE producto_id = NEW.producto_id;
+END $$
+DELIMITER ;
+
+-- Para probar
+INSERT INTO Compras (producto_id, cantidad, precio_unitario, fecha_compra, proveedor_id) VALUES (1, 30, 20.00, CURDATE(), 1);
+SELECT * FROM Inventarios WHERE producto_id = 1; 
+
+-- 13. Prevenir que tareas se eliminen sin ser completadas
+DELIMITER $$
+CREATE TRIGGER before_tarea_delete
+BEFORE DELETE ON Tareas
+FOR EACH ROW
+BEGIN
+    IF OLD.estado <> 'Completada' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se puede eliminar la tarea, no está completada';
+    END IF;
+END $$
+DELIMITER ;
+
+-- Para probar
+DELETE FROM Tareas WHERE tarea_id = 1; 
+
+-- 14. Prevenir la venta de productos sin stock
+DELIMITER $$
+CREATE TRIGGER before_venta_insert
+BEFORE INSERT ON Ventas
+FOR EACH ROW
+BEGIN
+    DECLARE cantidad_actual INT;
+
+    SELECT cantidad INTO cantidad_actual
+    FROM Inventarios
+    WHERE producto_id = NEW.producto_id;
+
+    IF cantidad_actual < NEW.cantidad THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No hay suficiente stock para realizar la venta';
+    END IF;
+END $$
+DELIMITER ;
+
+- Para probar
+INSERT INTO Inventarios (producto_id, cantidad, fecha_actualizacion) VALUES (2, 5, CURDATE());
+INSERT INTO Ventas (producto_id, cantidad, precio_unitario, fecha_venta, cliente_id) VALUES (2, 10, 50.00, CURDATE(), 1); 
+
+-- 15. Incrementar el contador de ventas en la tabla de Productos
+DELIMITER $$
+CREATE TRIGGER after_venta_insert
+AFTER INSERT ON Ventas
+FOR EACH ROW
+BEGIN
+    UPDATE Productos
+    SET contador_ventas = contador_ventas + 1
+    WHERE producto_id = NEW.producto_id;
+END $$
+DELIMITER ;
+
+-- Para probar
+INSERT INTO Productos (nombre, tipo_producto, unidad_medida, descripcion) VALUES ('Manzana', 'Fruta', 'Kilo', 'Manzana roja');
+INSERT INTO Ventas (producto_id, cantidad, precio_unitario, fecha_venta, cliente_id) VALUES (1, 10, 30.00, CURDATE(), 1);
+SELECT * FROM Productos WHERE producto_id = 1; 
+
+-- 16. Registrar un pago a un empleado y actualizar su historial
+DELIMITER $$
+CREATE TRIGGER after_pago_empleado_insert
+AFTER INSERT ON Pagos_Empleados
+FOR EACH ROW
+BEGIN
+    INSERT INTO Historial_Empleados (empleado_id, tipo_cambio, valor_anterior, valor_nuevo, fecha_cambio)
+    VALUES (NEW.empleado_id, 'Pago', 0, NEW.monto, CURDATE()); 
+END $$
+DELIMITER ;
+
+-- Probar
+INSERT INTO Pagos_Empleados (empleado_id, monto, fecha_pago, metodo_pago) VALUES (1, 300.00, CURDATE(), 'Transferencia');
+SELECT * FROM Historial_Empleados WHERE empleado_id = 1; 
+
+
+-- 17 Registrar historial de cambios de estado de las tareas
+DELIMITER $$
+CREATE TRIGGER after_tarea_update
+AFTER UPDATE ON Tareas
+FOR EACH ROW
+BEGIN
+    INSERT INTO Tareas (tarea_id, estado_anterior, estado_nuevo, fecha_cambio)
+    VALUES (NEW.tarea_id, OLD.estado, NEW.estado, CURDATE());
+END $$
+DELIMITER ;
+
+-- Probar
+INSERT INTO Tareas (descripcion, fecha_inicio, fecha_fin, estado) VALUES ('Tarea de limpieza', CURDATE(), DATE_ADD(CURDATE(), INTERVAL 1 DAY), 'Pendiente');
+UPDATE Tareas SET estado = 'En Progreso' WHERE tarea_id = 1;
+SELECT * FROM Tareas WHERE tarea_id = 1; 
+
+-- 18. Almacenar el historial de precios de productos
+DELIMITER $$
+CREATE TRIGGER after_producto_update
+AFTER UPDATE ON Productos
+FOR EACH ROW
+BEGIN
+    IF OLD.precio_unitario <> NEW.precio_unitario THEN
+        INSERT INTO Historial_Precio (producto_id, precio_anterior, precio_nuevo, fecha_cambio)
+        VALUES (NEW.producto_id, OLD.precio_unitario, NEW.precio_unitario, CURDATE());
+    END IF;
+END $$
+DELIMITER ;
+
+-- Para probar
+UPDATE Productos SET precio_unitario = 35.00 WHERE producto_id = 1;
+SELECT * FROM Historial_Precio WHERE producto_id = 1; 
+
+
+-- 19. Registrar un acceso de usuario
+DELIMITER $$
+CREATE TRIGGER after_usuario_insert
+AFTER INSERT ON Usuarios
+FOR EACH ROW
+BEGIN
+    INSERT INTO Auditoria_Accessos (usuario_id, accion, fecha_hora)
+    VALUES (NEW.usuario_id, 'Registro de Usuario', NOW());
+END $$
+DELIMITER ;
+
+-- Para probar
+INSERT INTO Usuarios (nombre_usuario, contrasena, rol_id) VALUES ('usuario_test', 'seguro123', 2);
+SELECT * FROM Auditoria_Accessos WHERE usuario_id = (SELECT usuario_id FROM Usuarios WHERE nombre_usuario = 'usuario_test');
+
+
+-- 20. Trigger para auditar cambios en el historial de inventarios:
+DELIMITER //
+CREATE TRIGGER after_costos_operativos_update
+AFTER UPDATE ON Costos_Operativos
+FOR EACH ROW
+BEGIN
+    INSERT INTO Costos_Operativos (tipo_costo, monto, fecha)
+    VALUES (NEW.tipo_costo, NEW.monto, CURDATE());
+END;
+//
+DELIMITER ;
+
+UPDATE Costos_Operativos SET monto = 3000.00 WHERE costo_id = 1;
+SELECT * FROM Costos_Operativos WHERE costo_id = 1;
