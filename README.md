@@ -282,36 +282,6 @@ Gestiona el acceso al sistema, asegurando que solo los usuarios autorizados pued
 
 ---
 
-## **CONSULTAS** 
-### 📌 **Conclusión**
-Este sistema de gestión integral es crucial para optimizar las operaciones de la finca, desde la administración de los productos y el personal hasta el control de inventarios y la gestión financiera. ¡Con él, las decisiones agrícolas y empresariales serán más informadas y eficientes! 🌱💻
-
-### 1. Estado Actual de los Inventarios 📦
-Funcionalidad: Esta consulta tiene como objetivo obtener una lista completa de productos junto con su cantidad disponible en el inventario. Esto es clave para tener un control preciso sobre lo que se tiene en stock y poder evitar desabastecimientos o sobreabastecimientos. Los gerentes de inventarios o responsables de compras pueden usar esta información para tomar decisiones sobre reposición de productos.
-Descripción para el README: Permite visualizar el estado actual de los productos, con su cantidad disponible en el inventario. Se obtiene de las tablas que registran los productos y los movimientos de inventario. Es importante porque asegura que el personal de la tienda o almacén tenga siempre información precisa sobre lo que hay disponible para la venta. De esta manera, los productos con bajo stock pueden ser identificados a tiempo para hacer nuevos pedidos.
-Contexto de uso: Ideal para revisar semanalmente o diariamente el estado del inventario, ayudando a mantener las operaciones de venta sin interrupciones.
-### 2. Ventas Totales por Producto 💸
-Funcionalidad: Esta consulta calcula las ventas totales generadas por cada producto. Al multiplicar la cantidad de productos vendidos por su precio, permite conocer los ingresos generados por cada producto de manera precisa. Esto es fundamental para realizar análisis de rendimiento de productos y establecer estrategias de ventas o promociones.
-Descripción para el README: Suma los ingresos obtenidos por la venta de cada producto, calculando las cantidades vendidas multiplicadas por el precio unitario de cada uno. Esto ayuda a los gerentes a entender qué productos están siendo más rentables y cuáles podrían necesitar ajustes en el precio o en las promociones. Además, permite tener una visión general de las ganancias obtenidas por cada artículo, lo que facilita la toma de decisiones comerciales.
-Contexto de uso: Útil para el análisis financiero y la planificación de inventario, ya que muestra qué productos generan más ingresos. Se puede usar para ajustar estrategias de marketing o promoción.
-### 3. Productos con Inventario Superior a 100 Unidades 📈
-Funcionalidad: Esta consulta se utiliza para filtrar los productos que tienen más de 100 unidades disponibles en inventario. Esto ayuda a identificar los productos que están suficientemente abastecidos y no necesitan ser reordenados de inmediato, lo que también ayuda a evitar la sobrecompra.
-Descripción para el README: Filtra y muestra aquellos productos cuyo inventario supera las 100 unidades. Esto es útil para gestionar la reposición de productos y controlar el gasto en compras. La consulta asegura que el negocio pueda realizar un seguimiento eficiente de los productos que tienen una cantidad significativa en stock, para no hacer compras innecesarias.
-Contexto de uso: Ideal para la gestión de compras, ya que asegura que los productos con alto stock no sean reordenados sin necesidad. También es útil en la toma de decisiones sobre promociones, ya que puedes promover productos con alto inventario para acelerar su venta.
-### 4. Total de Inventario Disponible por Producto 🏷️
-Funcionalidad: Esta consulta calcula el total de unidades disponibles de cada producto, no solo en una ubicación, sino a nivel global (en varias ubicaciones o almacenes). Permite gestionar el inventario de manera centralizada y obtener una visión más clara de la cantidad de productos disponibles en todas las ubicaciones.
-Descripción para el README: Suma el inventario disponible por producto a nivel global, combinando las cantidades de diferentes sucursales o almacenes. Esta consulta proporciona un panorama completo de la disponibilidad de productos en todo el sistema. Es fundamental para la toma de decisiones logísticas y para asegurar que los productos estén disponibles en todas las ubicaciones necesarias.
-Contexto de uso: Esta consulta es clave para empresas con múltiples puntos de venta o almacenes. Ayuda a centralizar la información del inventario y facilita la redistribución de productos entre diferentes ubicaciones, evitando desabastecimientos en puntos de venta con alta demanda.
-Resumen para el README:
-Estas consultas SQL son esenciales para un sistema de gestión de inventarios eficiente. Ofrecen a los gerentes de almacén, ventas y compras las herramientas necesarias para tener un control total sobre el inventario y las ventas. A través de estas consultas, se puede:
-
-- Monitorear la cantidad disponible de productos en el inventario.
-Analizar el rendimiento de ventas de cada producto.
-Identificar productos con stock suficiente para evitar compras innecesarias.
-Tener una visión general del inventario disponible en todas las ubicaciones, asegurando una distribución adecuada.
-Estas consultas son útiles tanto para la toma de decisiones operativas, como para la planificación estratégica de compras y promociones. Implementar estas funcionalidades en el sistema de base de datos garantizará una gestión más ágil y eficiente del inventario, optimizando la disponibilidad de productos y maximizando los ingresos.
-
-
 ## PROCEDIMIENTOS
 Este proyecto está diseñado para gestionar la información de ventas, inventarios, proveedores, empleados, maquinaria, y más, mediante procedimientos almacenados en una base de datos SQL. A continuación se describen los procedimientos que permiten interactuar con las distintas tablas y manejar las operaciones clave de este sistema.
 
@@ -558,7 +528,7 @@ Si tu implementación requiere características adicionales como triggers o proc
 - Stored Procedures
 ✅ Verificación de la instalación:
 Para asegurarte de que todo está configurado correctamente, prueba crear una tabla en tu nueva base de datos e inserta algunos registros de prueba. Esto puede ser tan simple como:
-
+````bash
 USE finca_agricola;
 
 CREATE TABLE prueba (
@@ -569,3 +539,12 @@ CREATE TABLE prueba (
 INSERT INTO prueba (nombre) VALUES ('Registro de Prueba');
 
 SELECT * FROM prueba;
+````
+
+____
+### 📬 Contacto
+- 📧 Correo electrónico: cristanchodayana062017@gmail.com
+
+- 💼 LinkedIn: [Elidallana Cristancho Caceres](https://www.linkedin.com/in/elidallanacristancho/)
+
+¡Gracias por ser parte de esta aventura! 🚀✨
